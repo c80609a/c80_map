@@ -276,227 +276,208 @@ var clog = function () {
 
         };
 
-        var initAddControls = function () {
-            var map = self.map,
-                mapbody = $('.mmap-image', self.map);
+        // Drag & drop
+        var __onDragNdropMouseMove = function (event) {
+            self.dragging = true;
 
-            document.ondragstart = function () {
-                return false;
-            }; // IE drag fix
+            var map = self.map;
+            var x = event.pageX - map.data('mouseX') + self.x;
+            var y = event.pageY - map.data('mouseY') + self.y;
 
-            function onSvgMousedown(e) {
-                clog("<onSvgMousedown> self.mode = " + self.mode);
+            x = self.normalizeX(x);
+            y = self.normalizeY(y);
 
-                if (self.mode === 'editing' || self.mode === "edit_building" || self.mode === 'edit_area') {
-                    if (e.target.parentNode.tagName === 'g') {
-                        clog("<onSvgMousedown> e = ");
-                        //clog(e.pageX);
-                        //clog("<mouseDown> e.target.parentNode.tagName = " + e.target.parentNode.tagName);
-                        //clog(e.target);
-                        //info.unload();
+            clog("<Map.mousemove> x = " + x + "; y = " + y);
+            clog("<Map.mousemove> Call moveTo.");
+            self.moveTo(x, y);
+            map.data('lastX', x);
+            map.data('lastY', y);
+        };
+        var __onDragNdropMouseUp = function (event) {
+            clog("<mouseup> self.mode = " + self.mode);
 
-                        // запомним ссылку на "выбранную" область
-                        self.selected_area = e.target.parentNode.obj;
+            var map = self.map;
 
-                        //app.deselectAll();
+            // если это в самом деле был drag\n\drop
+            if (self.dragging) {
 
-                        // поменяем внешний вид - добавим класс .selected
-                        self.selected_area.select();
+                self.x = map.data('lastX');
+                self.y = map.data('lastY');
+            }
 
-                        // запомним начальные координаты кликаы
-                        self.selected_area.delta = {
-                            'x': e.pageX,
-                            'y': e.pageY
-                        };
+            // иначе - пытаемся выяснить, в каком режиме находимся
+            else {
 
-                        // если взаимодействуем с вершиной
-                        if (utils.hasClass(e.target, 'helper')) {
-                            var helper = e.target;
-                            //clog("<mouseDown> helper.action = ");
-                            //clog(helper.action);
-                            self.edit_type = helper.action; // pointMove
+                var p;
 
-                            if (helper.n >= 0) { // if typeof selected_area == polygon
-                                self.selected_area.selected_point = helper.n;
-                            }
+                /* если находимся в режиме просмотра всей карты - входим в здание */
+                if (self.mode == 'viewing') {
+                    //clog($(event.target).parent()[0].obj.building);
 
-                            self.addEvent(self.el[0], 'mousemove', self.onEdit)
-                                //self.addEvent(self.el[0], 'mousemove', self.selected_area.onEdit)
-                                .addEvent(self.el[0], 'mouseup', self.onEditStop);
-                        }
+                    // добираемся до объекта класса Здание, который обслуживает полигон
+                    p = $(event.target).parent()[0];
+                    if (p.obj && p.obj.building) {
+                        var building = p.obj.building;
+                        clog("<mouseup> Входим в здание.");
+                        building.enter();
+                    }
 
-                        else if (e.target.tagName === 'rect' || e.target.tagName === 'circle' || e.target.tagName === 'polygon') {
-                            self.edit_type = 'move';
-                            self.addEvent(self.el[0], 'mousemove', self.onEdit)
-                                .addEvent(self.el[0], 'mouseup', self.onEditStop);
-                        }
-                    } else {
-                        //app.deselectAll();
-                        //info.unload();
+                }
+
+                /* если находимся в режиме рисования - рисуем */
+                else if (self.mode == 'creating') {
+
+                    // и если ещё пока не начали рисовать (т.е. если это первый клик)
+                    if (!self.is_draw) {
+
+                        var xx = self.rightX(event.pageX);
+                        var yy = self.rightY(event.pageY);
+                        //clog("<mouseup> " + xx + "; " + yy);
+
+                        self.new_area = new Polygon(xx, yy, false, self);
+
+                        //self.addEvent(self.el[0], 'mousemove', self.new_area.onDraw)
+                        self.addEvent(self.el[0], 'mousemove', function (e) {
+                            var _n_f = self.new_area;
+                            var right_angle = !!e.shiftKey; //e.shiftKey ? true : false;
+
+                            _n_f.dynamicDraw(self.rightX(e.pageX), self.rightY(e.pageY), right_angle);
+                        })
+                            //.addEvent(self.new_area.helpers[0].helper, 'click', self.new_area.onDrawStop)
+                            //.addEvent(self.el[0], 'click', self.new_area.onDrawAddPoint);
+                            .addEvent(self.el[0], 'click', function (e) {
+
+                                // если кликнули в первую точку фигуры - заканчиваем рисование
+                                var $et = $(e.target);
+                                var $h = $(self.new_area.helpers[0].helper);
+                                if ($et.attr('x') == $h.attr('x') && $et.attr('y') == $h.attr('y')) {
+                                    //self.new_area.onDrawStop();
+                                    self.onDrawStop();
+                                    return;
+                                }
+
+                                var x = self.rightX(e.pageX),
+                                    y = self.rightY(e.pageY),
+                                    _n_f = self.new_area;
+
+                                if (e.shiftKey) {
+                                    var right_coords = _n_f.right_angle(x, y);
+                                    x = right_coords.x;
+                                    y = right_coords.y;
+                                }
+                                _n_f.addPoint(x, y);
+                            });
+                        //    .addEvent(document, 'keydown', new_area.onDrawStop)
                     }
                 }
-            }
 
-            self.svg.on('mousedown', onSvgMousedown);
-            //self.el[0].addEventListener('mousedown', onSvgMousedown, false);
+                /* если находимся в режиме просмотра здания - входим в площадь*/
+                else if (self.mode == 'view_building' || self.mode == 'view_area') {
 
+                    // добираемся до объекта класса Area, который обслуживает полигон
+                    p = $(event.target).parent()[0];
+                    //clog($(event.target).parent()[0].obj.area_hash);
 
-            // Drag & drop
-            function onDragNdrop(event) {
-                //clog("<mousedown> edit_type = " + self.edit_type);
-                clog("<mousedown> mode = " + self.mode);
-                clog(event);
+                    if (p.obj && p.obj.area) {
+                        var area = p.obj.area;
+                        clog("<mouseup> Входим в площадь.");
+                        area.enter();
+                    }
 
-                // если в данный момент не редактируем фигуру (т.е. не двигаем вершину фигуры)
-                if (self.edit_type == null) {
-                    self.dragging = false;
-                    map.stop();
-
-                    map.data('mouseX', event.pageX);
-                    map.data('mouseY', event.pageY);
-                    map.data('lastX', self.x);
-                    map.data('lastY', self.y);
-
-                    map.addClass('mdragging');
-
-                    self.map.on('mousemove', function (event) {
-                        self.dragging = true;
-
-                        var x = event.pageX - map.data('mouseX') + self.x;
-                        var y = event.pageY - map.data('mouseY') + self.y;
-
-                        x = self.normalizeX(x);
-                        y = self.normalizeY(y);
-
-                        clog("<Map.mousemove> x = " + x + "; y = " + y);
-                        clog("<Map.mousemove> Call moveTo.");
-                        self.moveTo(x, y);
-                        map.data('lastX', x);
-                        map.data('lastY', y);
-                    });
-
-                    $(document).on('mouseup', function (event) {
-                        //clog("<mouseup> dragging = " + self.dragging + ", mode = " + self.mode + "; is_draw = " + self.is_draw + "; scale = " + self.scale);
-                        //clog("<mouseup> event = ");
-                        //clog(event);
-                        //clog("<mouseup> event.target = ");
-                        //clog($(event.target).parent()[0].obj);
-
-                        //clog("<mouseup> [qq] screen: " + event.pageX + ", " + event.pageY +
-                        //"; logic: " + self.rightX(event.pageX) + ", " + self.rightY(event.pageY));
-
-                        clog("<mouseup> self.mode = " + self.mode);
-
-                        // если это в самом деле был drag\n\drop
-                        if (self.dragging) {
-
-                            self.x = map.data('lastX');
-                            self.y = map.data('lastY');
-                        }
-
-                        // иначе - пытаемся выяснить, в каком режиме находимся
-                        else {
-
-                            var p;
-
-                            /* если находимся в режиме просмотра всей карты - входим в здание */
-                            if (self.mode == 'viewing') {
-                                //clog($(event.target).parent()[0].obj.building);
-
-                                // добираемся до объекта класса Здание, который обслуживает полигон
-                                p = $(event.target).parent()[0];
-                                if (p.obj && p.obj.building) {
-                                    var building = p.obj.building;
-                                    clog("<mouseup> Входим в здание.");
-                                    building.enter();
-                                }
-
-                            }
-
-                            /* если находимся в режиме рисования - рисуем */
-                            else if (self.mode == 'creating') {
-
-                                // и если ещё пока не начали рисовать (т.е. если это первый клик)
-                                if (!self.is_draw) {
-
-                                    var xx = self.rightX(event.pageX);
-                                    var yy = self.rightY(event.pageY);
-                                    //clog("<mouseup> " + xx + "; " + yy);
-
-                                    self.new_area = new Polygon(xx, yy, false, self);
-
-                                    //self.addEvent(self.el[0], 'mousemove', self.new_area.onDraw)
-                                    self.addEvent(self.el[0], 'mousemove', function (e) {
-                                        var _n_f = self.new_area;
-                                        var right_angle = !!e.shiftKey; //e.shiftKey ? true : false;
-
-                                        _n_f.dynamicDraw(self.rightX(e.pageX), self.rightY(e.pageY), right_angle);
-                                    })
-                                        //.addEvent(self.new_area.helpers[0].helper, 'click', self.new_area.onDrawStop)
-                                        //.addEvent(self.el[0], 'click', self.new_area.onDrawAddPoint);
-                                        .addEvent(self.el[0], 'click', function (e) {
-
-                                            // если кликнули в первую точку фигуры - заканчиваем рисование
-                                            var $et = $(e.target);
-                                            var $h = $(self.new_area.helpers[0].helper);
-                                            if ($et.attr('x') == $h.attr('x') && $et.attr('y') == $h.attr('y')) {
-                                                //self.new_area.onDrawStop();
-                                                self.onDrawStop();
-                                                return;
-                                            }
-
-                                            var x = self.rightX(e.pageX),
-                                                y = self.rightY(e.pageY),
-                                                _n_f = self.new_area;
-
-                                            if (e.shiftKey) {
-                                                var right_coords = _n_f.right_angle(x, y);
-                                                x = right_coords.x;
-                                                y = right_coords.y;
-                                            }
-                                            _n_f.addPoint(x, y);
-                                        });
-                                    //    .addEvent(document, 'keydown', new_area.onDrawStop)
-                                }
-                            }
-
-                            /* если находимся в режиме просмотра здания - входим в площадь*/
-                            else if (self.mode == 'view_building' || self.mode == 'view_area') {
-
-                                // добираемся до объекта класса Area, который обслуживает полигон
-                                p = $(event.target).parent()[0];
-                                //clog($(event.target).parent()[0].obj.area_hash);
-
-                                if (p.obj && p.obj.area) {
-                                    var area = p.obj.area;
-                                    clog("<mouseup> Входим в площадь.");
-                                    area.enter();
-                                }
-
-                            }
-                        }
-
-                        self.map.off('mousemove');
-                        $(document).off('mouseup');
-
-                        map.removeClass('mdragging');
-                    });
                 }
             }
 
+            self.map.off('mousemove');
+            $(document).off('mouseup');
+
+            map.removeClass('mdragging');
+        };
+        var onDragNdrop = function (event) {
+            clog("<mousedown> mode = " + self.mode);
+            clog(event);
+
+            var map = self.map;
+
+            // если в данный момент не редактируем фигуру (т.е. не двигаем вершину фигуры)
+            if (self.edit_type == null) {
+                self.dragging = false;
+                map.stop();
+
+                map.data('mouseX', event.pageX);
+                map.data('mouseY', event.pageY);
+                map.data('lastX', self.x);
+                map.data('lastY', self.y);
+
+                map.addClass('mdragging');
+
+                self.map.on('mousemove', __onDragNdropMouseMove);
+                $(document).on('mouseup', __onDragNdropMouseUp);
+            }
+        };
+        var onSvgMousedown = function (e) {
+
+            clog("<onSvgMousedown> self.mode = " + self.mode);
+
+            if (self.mode === 'editing' || self.mode === "edit_building" || self.mode === 'edit_area') {
+                if (e.target.parentNode.tagName === 'g') {
+                    clog("<onSvgMousedown> e = ");
+                    //clog(e.pageX);
+                    //clog("<mouseDown> e.target.parentNode.tagName = " + e.target.parentNode.tagName);
+                    //clog(e.target);
+                    //info.unload();
+
+                    // запомним ссылку на "выбранную" область
+                    self.selected_area = e.target.parentNode.obj;
+
+                    //app.deselectAll();
+
+                    // поменяем внешний вид - добавим класс .selected
+                    self.selected_area.select();
+
+                    // запомним начальные координаты кликаы
+                    self.selected_area.delta = {
+                        'x': e.pageX,
+                        'y': e.pageY
+                    };
+
+                    // если взаимодействуем с вершиной
+                    if (utils.hasClass(e.target, 'helper')) {
+                        var helper = e.target;
+                        //clog("<mouseDown> helper.action = ");
+                        //clog(helper.action);
+                        self.edit_type = helper.action; // pointMove
+
+                        if (helper.n >= 0) { // if typeof selected_area == polygon
+                            self.selected_area.selected_point = helper.n;
+                        }
+
+                        self.addEvent(self.el[0], 'mousemove', self.onEdit)
+                            //self.addEvent(self.el[0], 'mousemove', self.selected_area.onEdit)
+                            .addEvent(self.el[0], 'mouseup', self.onEditStop);
+                    }
+
+                    else if (e.target.tagName === 'rect' || e.target.tagName === 'circle' || e.target.tagName === 'polygon') {
+                        self.edit_type = 'move';
+                        self.addEvent(self.el[0], 'mousemove', self.onEdit)
+                            .addEvent(self.el[0], 'mouseup', self.onEditStop);
+                    }
+                } else {
+                    //app.deselectAll();
+                    //info.unload();
+                }
+            }
+        };
+
+        var initAddControls = function () {
+
+            // IE drag fix
+            document.ondragstart = function () {
+                return false;
+            };
+
+            self.svg.on('mousedown', onSvgMousedown);
             self.svg.on('mousedown', onDragNdrop);
             self.svg_overlay.on('mousedown', onDragNdrop);
-
-            self.el[0].addEventListener('mousemove', function (e) {
-                //coords_info.innerHTML = 'x: ' + rightX(e.pageX) + ', ' + 'y: ' + rightY(e.pageY);
-            }, false);
-
-            self.el[0].addEventListener('mouseleave', function () {
-                //coords_info.innerHTML = '';
-            }, false);
-
-            /* Disable selection */
-            //self.el[0].addEventListener('mousedown', function(e) { e.preventDefault(); }, false);
 
             /* Disable image dragging */
             self.el[0].addEventListener('dragstart', function (e) {
