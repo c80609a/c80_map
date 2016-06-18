@@ -125,7 +125,7 @@ function StateController() {
 
             // перешли в состояние рисования полигона
             case "creating":
-                _this.mzoom_buttons.css('opacity', '0');
+                //_this.mzoom_buttons.css('opacity', '0');
                 _this.map_creating.css('display', 'block');
 
                 _this.main_map.css('opacity', '1');
@@ -164,9 +164,9 @@ function StateController() {
                 _this.area_order_button.css("width", tq);
                 _this.area_order_button.css('display', 'block');
                 _map.edit_button_klass.setState('view_area', true); // [a1x7]
-                break;
+            break;
 
-            // начали редактировать, находясь в здании
+            // редактируем, находясь в здании
             case "edit_building":
                 _map.back_to_map_button_klass.hide();
 
@@ -193,7 +193,9 @@ function StateController() {
                 // покажем, возможно спрятанные, zoom кнопки
                 _this.mzoom_buttons.css('opacity', '1');
 
-                break;
+
+
+            break;
         }
     };
 

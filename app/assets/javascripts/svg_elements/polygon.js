@@ -200,7 +200,7 @@ Polygon.createFromSaved = function (params, is_overlay, self) {
     delete(area.polyline);
 
     self.is_draw = false;
-    self.new_area = null;
+    self.drawing_poligon = null;
 
     return area;
 

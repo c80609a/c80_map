@@ -62,7 +62,7 @@ var clog = function () {
         self.mode = 'viewing';
         self.setMode = null;
         self.selected_area = null;
-        self.new_area = null;
+        self.drawing_poligon = null;
         self.events = [];
         self.edit_type = null;
         self.new_button_klass = null;
@@ -431,31 +431,31 @@ var clog = function () {
                                     var yy = self.rightY(event.pageY);
                                     //clog("<mouseup> " + xx + "; " + yy);
 
-                                    self.new_area = new Polygon(xx, yy, false, self);
+                                    self.drawing_poligon = new Polygon(xx, yy, false, self);
 
-                                    //self.addEvent(self.el[0], 'mousemove', self.new_area.onDraw)
+                                    //self.addEvent(self.el[0], 'mousemove', self.drawing_poligon.onDraw)
                                     self.addEvent(self.el[0], 'mousemove', function (e) {
-                                        var _n_f = self.new_area;
+                                        var _n_f = self.drawing_poligon;
                                         var right_angle = !!e.shiftKey; //e.shiftKey ? true : false;
 
                                         _n_f.dynamicDraw(self.rightX(e.pageX), self.rightY(e.pageY), right_angle);
                                     })
-                                        //.addEvent(self.new_area.helpers[0].helper, 'click', self.new_area.onDrawStop)
-                                        //.addEvent(self.el[0], 'click', self.new_area.onDrawAddPoint);
+                                        //.addEvent(self.drawing_poligon.helpers[0].helper, 'click', self.drawing_poligon.onDrawStop)
+                                        //.addEvent(self.el[0], 'click', self.drawing_poligon.onDrawAddPoint);
                                         .addEvent(self.el[0], 'click', function (e) {
 
                                             // если кликнули в первую точку фигуры - заканчиваем рисование
                                             var $et = $(e.target);
-                                            var $h = $(self.new_area.helpers[0].helper);
+                                            var $h = $(self.drawing_poligon.helpers[0].helper);
                                             if ($et.attr('x') == $h.attr('x') && $et.attr('y') == $h.attr('y')) {
-                                                //self.new_area.onDrawStop();
+                                                //self.drawing_poligon.onDrawStop();
                                                 self.onDrawStop();
                                                 return;
                                             }
 
                                             var x = self.rightX(e.pageX),
                                                 y = self.rightY(e.pageY),
-                                                _n_f = self.new_area;
+                                                _n_f = self.drawing_poligon;
 
                                             if (e.shiftKey) {
                                                 var right_coords = _n_f.right_angle(x, y);
@@ -700,7 +700,7 @@ var clog = function () {
                 }
             }
 
-            var _n_f = self.new_area;
+            var _n_f = self.drawing_poligon;
             if (_n_f.params.length >= 6) { //>= 3 points for polygon
                 _n_f.polyline = _n_f.polygon;
                 _n_f.polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
@@ -709,7 +709,7 @@ var clog = function () {
                 delete(_n_f.polyline);
 
                 self.removeAllEvents();
-                self.new_area = null;
+                self.drawing_poligon = null;
                 self.is_draw = false;
             }
 
