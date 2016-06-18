@@ -31,7 +31,7 @@ var InitMap = function () {
 };
 
 var clog = function () {
-    //console.log(arguments);
+    console.log(arguments[0]);
 };
 
 (function () {
@@ -345,7 +345,7 @@ var clog = function () {
             function onDragNdrop(event) {
                 //clog("<mousedown> edit_type = " + self.edit_type);
                 clog("<mousedown> mode = " + self.mode);
-                clog(event);
+                //clog(event);
 
                 // если в данный момент не редактируем фигуру (т.е. не двигаем вершину фигуры)
                 if (self.edit_type == null) {
@@ -356,6 +356,8 @@ var clog = function () {
                     map.data('mouseY', event.pageY);
                     map.data('lastX', self.x);
                     map.data('lastY', self.y);
+                    map.data('startX', self.x);
+                    map.data('startY', self.y);
 
                     map.addClass('mdragging');
 
@@ -387,8 +389,14 @@ var clog = function () {
 
                         clog("<mouseup> self.mode = " + self.mode);
 
+                        // исключаем случайный dnd дрожащей рукой
+                        var dx = map.data('startX') - map.data('lastX');
+                        var dy = map.data('startY') - map.data('lastY');
+                        var delta = Math.sqrt(dx*dx + dy*dy);
+                        var is_real_dragging = delta > 10;
+
                         // если это в самом деле был drag\n\drop
-                        if (self.dragging) {
+                        if (self.dragging && is_real_dragging) {
 
                             self.x = map.data('lastX');
                             self.y = map.data('lastY');
@@ -455,13 +463,13 @@ var clog = function () {
                                                 y = right_coords.y;
                                             }
                                             _n_f.addPoint(x, y);
-                                        });
-                                    //    .addEvent(document, 'keydown', new_area.onDrawStop)
+                                        })
+                                        .addEvent(document, 'keydown', self.onDrawStop);
                                 }
                             }
 
                             /* если находимся в режиме просмотра здания - входим в площадь*/
-                            else if (self.mode == 'view_building' || self.mode == 'view_area') {
+                            else if (self.mode == 'view_building') {
 
                                 // добираемся до объекта класса Area, который обслуживает полигон
                                 p = $(event.target).parent()[0];
