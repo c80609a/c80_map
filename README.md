@@ -22,7 +22,19 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+1. Host application:
+
+```
+   $(document).ready(function() {
+       InitMap();
+   });
+```
+    
+2. Seeds:
+
+```
+    $ rake db:seed:801_fill_map_settings
+```
 
 ## Development
 
