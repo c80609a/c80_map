@@ -459,6 +459,20 @@
 
       }
 
+      &.mapplic-save-button {
+        border-radius: 0 0 1px 1px;
+        border-top: none;
+        display: none;
+
+        &:after {
+          content: '\f0c7';
+          font-family: 'FontAwesome';
+          font-size: 21px;
+          font-weight: normal;
+        }
+
+      }
+
       &.mapplic-disabled {
         background-color: #8f8f8f;
         cursor: default;

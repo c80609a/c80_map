@@ -191,7 +191,7 @@ function StateController() {
                 // покажем, возможно спрятанные, zoom кнопки
                 _this.mzoom_buttons.css('opacity', '1');
 
-
+                _map.save_button_klass.check_and_show();
 
             break;
         }

@@ -72,6 +72,7 @@ var clog = function () {
         self.current_building = null;
         self.current_area = null;
         self.is_draw = false;
+        self.save_button_klass = null;
 
         // true, если:
         //- юзер не кликал по кнопкам zoom
@@ -195,6 +196,9 @@ var clog = function () {
 
                 e = new CompleteCreatingButton();
                 e.init("#completeCreating", self);
+
+                self.save_button_klass = new SaveChangesButton();
+                self.save_button_klass.init('.mapplic-save-button', self);
 
             });
 
