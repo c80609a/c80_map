@@ -16,8 +16,20 @@ function StateController() {
     _this.area_order_button = $('.area_order_button');
     _this.masked = $('#masked');
 
+    _this.prev_mode = null;
+
     _this.setMode = function (mode) {
-        console.log('<StateController.setMode> mode = ' + mode);
+
+        // Должен быть учёт, из какого состояния пришли в состояние рисования, и возвращаться в него
+        //      * При рисовании, находясь внутри здания, возвращаться в 'edit_building'
+        //      * При рисовании, находясь внутри площади, возвращаться в 'edit_area'
+        if (mode == 'editing') {
+            mode = _this.prev_mode;
+        }
+
+        clog('<StateController.setMode> mode = ' + mode);
+
+        _this.prev_mode = _map.mode;
         _map.mode = mode;
 
         // этот код коррелирует с [x9cs7]. Возможно, нужен рефакторинг.
@@ -74,7 +86,7 @@ function StateController() {
             // перешли в состояние
             // просмотра карты, все здания с крышами
             case "viewing":
-                //console.log("_this.left_side.data('init') = " + _this.left_side.data('init'));
+                //clog("_this.left_side.data('init') = " + _this.left_side.data('init'));
 
                 // покажем надписи "цена за метр" и адрес с телефоном
                 if (_this.left_side.data('init') == undefined) {
@@ -174,6 +186,12 @@ function StateController() {
 
                 // спрячем инфу о здании
                 _this.building_info.css("top", -300);
+
+                // спрячем статус строку "вы создаёте полигон"
+                _this.map_creating.css('display', 'none');
+
+                // покажем, возможно спрятанные, zoom кнопки
+                _this.mzoom_buttons.css('opacity', '1');
 
                 break;
         }
