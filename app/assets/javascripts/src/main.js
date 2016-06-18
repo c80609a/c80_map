@@ -30,6 +30,10 @@ var InitMap = function () {
 
 };
 
+var clog = function () {
+    //console.log(arguments);
+};
+
 (function () {
 
     var Map = function () {
@@ -221,7 +225,7 @@ var InitMap = function () {
                     div_css_selector: '#container_buttons .mzoom_buttons'
                 }
             }).done(function () {
-                console.log('<ajax.done>');
+                clog('<ajax.done>');
 
                 self.edit_button_klass = new EditButton();
                 self.edit_button_klass.init('.mapplic-edit-button', self);
@@ -347,7 +351,7 @@ var InitMap = function () {
                 if (mark_do_moving) {
                     self.x = self.normalizeX(self.CX - self.scale * cx - self.container.offset().left);
                     self.y = self.normalizeY(self.CY - self.scale * cy - self.container.offset().top);
-                    console.log("<Map.initProcessData> call moveTo");
+                    clog("<Map.initProcessData> call moveTo");
                     self.moveTo(self.x, self.y, self.scale, 100);
                 }
 
@@ -377,7 +381,7 @@ var InitMap = function () {
 
                 self.x = self.normalizeX(self.x - (event.pageX - self.container.offset().left - self.x) * (self.scale / scale - 1));
                 self.y = self.normalizeY(self.y - (event.pageY - self.container.offset().top - self.y) * (self.scale / scale - 1));
-                console.log("<dblclick> self.moveTo: " + self.x + "," + self.y);
+                clog("<dblclick> self.moveTo: " + self.x + "," + self.y);
 
                 self.moveTo(self.x, self.y, self.scale, 400, 'easeInOutCubic');
                 self.mark_virgin = false;
@@ -385,12 +389,12 @@ var InitMap = function () {
 
             // Mousewheel
             /*$('#svg', self.el).bind('mousewheel DOMMouseScroll', function (event) {
-                //console.log('wheel');
+                //clog('wheel');
                 var delta = event.originalEvent.wheelDelta;
                 event.preventDefault();
 
                 var scale = self.scale;
-                //console.log('<wheel> scale = ' + scale + "; delta = " + delta);
+                //clog('<wheel> scale = ' + scale + "; delta = " + delta);
                 self.scale = self.normalizeScale(scale + .05 * delta / Math.abs(delta));
 
                 self.x = self.normalizeX(self.x - (event.pageX - self.container.offset().left - self.x) * (self.scale / scale - 1));
@@ -480,14 +484,14 @@ var InitMap = function () {
             /* Add mousedown event for svg */
 
             function onSvgMousedown(e) {
-                console.log("<onSvgMousedown> self.mode = " + self.mode);
+                clog("<onSvgMousedown> self.mode = " + self.mode);
 
                 if (self.mode === 'editing' || self.mode === "edit_building" || self.mode === 'edit_area') {
                     if (e.target.parentNode.tagName === 'g') {
-                        console.log("<onSvgMousedown> e = ");
-                        //console.log(e.pageX);
-                        //console.log("<mouseDown> e.target.parentNode.tagName = " + e.target.parentNode.tagName);
-                        //console.log(e.target);
+                        clog("<onSvgMousedown> e = ");
+                        //clog(e.pageX);
+                        //clog("<mouseDown> e.target.parentNode.tagName = " + e.target.parentNode.tagName);
+                        //clog(e.target);
                         //info.unload();
 
                         // запомним ссылку на "выбранную" область
@@ -507,8 +511,8 @@ var InitMap = function () {
                         // если взаимодействуем с вершиной
                         if (utils.hasClass(e.target, 'helper')) {
                             var helper = e.target;
-                            //console.log("<mouseDown> helper.action = ");
-                            //console.log(helper.action);
+                            //clog("<mouseDown> helper.action = ");
+                            //clog(helper.action);
                             self.edit_type = helper.action; // pointMove
 
                             if (helper.n >= 0) { // if typeof selected_area == polygon
@@ -538,9 +542,9 @@ var InitMap = function () {
 
             // Drag & drop
             function onDragNdrop(event) {
-                //console.log("<mousedown> edit_type = " + self.edit_type);
-                console.log("<mousedown> mode = " + self.mode);
-                console.log(event);
+                //clog("<mousedown> edit_type = " + self.edit_type);
+                clog("<mousedown> mode = " + self.mode);
+                clog(event);
 
                 // если в данный момент не редактируем фигуру (т.е. не двигаем вершину фигуры)
                 if (self.edit_type == null) {
@@ -563,24 +567,24 @@ var InitMap = function () {
                         x = self.normalizeX(x);
                         y = self.normalizeY(y);
 
-                        console.log("<Map.mousemove> x = " + x + "; y = " + y);
-                        console.log("<Map.mousemove> Call moveTo.");
+                        clog("<Map.mousemove> x = " + x + "; y = " + y);
+                        clog("<Map.mousemove> Call moveTo.");
                         self.moveTo(x, y);
                         map.data('lastX', x);
                         map.data('lastY', y);
                     });
 
                     $(document).on('mouseup', function (event) {
-                        //console.log("<mouseup> dragging = " + self.dragging + ", mode = " + self.mode + "; is_draw = " + self.is_draw + "; scale = " + self.scale);
-                        //console.log("<mouseup> event = ");
-                        //console.log(event);
-                        //console.log("<mouseup> event.target = ");
-                        //console.log($(event.target).parent()[0].obj);
+                        //clog("<mouseup> dragging = " + self.dragging + ", mode = " + self.mode + "; is_draw = " + self.is_draw + "; scale = " + self.scale);
+                        //clog("<mouseup> event = ");
+                        //clog(event);
+                        //clog("<mouseup> event.target = ");
+                        //clog($(event.target).parent()[0].obj);
 
-                        //console.log("<mouseup> [qq] screen: " + event.pageX + ", " + event.pageY +
+                        //clog("<mouseup> [qq] screen: " + event.pageX + ", " + event.pageY +
                         //"; logic: " + self.rightX(event.pageX) + ", " + self.rightY(event.pageY));
 
-                        console.log("<mouseup> self.mode = " + self.mode);
+                        clog("<mouseup> self.mode = " + self.mode);
 
                         // если это в самом деле был drag\n\drop
                         if (self.dragging) {
@@ -596,13 +600,13 @@ var InitMap = function () {
 
                             /* если находимся в режиме просмотра всей карты - входим в здание */
                             if (self.mode == 'viewing') {
-                                //console.log($(event.target).parent()[0].obj.building);
+                                //clog($(event.target).parent()[0].obj.building);
 
                                 // добираемся до объекта класса Здание, который обслуживает полигон
                                 p = $(event.target).parent()[0];
                                 if (p.obj && p.obj.building) {
                                     var building = p.obj.building;
-                                    console.log("<mouseup> Входим в здание.");
+                                    clog("<mouseup> Входим в здание.");
                                     building.enter();
                                 }
 
@@ -616,7 +620,7 @@ var InitMap = function () {
 
                                     var xx = self.rightX(event.pageX);
                                     var yy = self.rightY(event.pageY);
-                                    //console.log("<mouseup> " + xx + "; " + yy);
+                                    //clog("<mouseup> " + xx + "; " + yy);
 
                                     self.new_area = new Polygon(xx, yy, false, self);
 
@@ -660,11 +664,11 @@ var InitMap = function () {
 
                                 // добираемся до объекта класса Area, который обслуживает полигон
                                 p = $(event.target).parent()[0];
-                                //console.log($(event.target).parent()[0].obj.area_hash);
+                                //clog($(event.target).parent()[0].obj.area_hash);
 
                                 if (p.obj && p.obj.area) {
                                     var area = p.obj.area;
-                                    console.log("<mouseup> Входим в площадь.");
+                                    clog("<mouseup> Входим в площадь.");
                                     area.enter();
                                 }
 
@@ -705,7 +709,7 @@ var InitMap = function () {
 
         // какой должен быть минимальный масштаб, чтобы вписать отрезок [min,max] в отрезок [p1,p2]
         self.calcScale = function (min, max, p1, p2) {
-            console.log("<calcScale> [" + min + "," + max + '] to [' + p1 + "," + p2 + "]");
+            clog("<calcScale> [" + min + "," + max + '] to [' + p1 + "," + p2 + "]");
             return (p2 - p1) / (max - min);
         };
 
@@ -723,7 +727,7 @@ var InitMap = function () {
         var _is_debug_drawn = false;
 
         self.ivalidateViewArea = function () {
-            //console.log('<init> _$b.offset().left = ' + _$b.offset().left);
+            //clog('<init> _$b.offset().left = ' + _$b.offset().left);
 
             // рассчитаем "константы" - прямоугольник, в который надо вписывать картинки зданий при входе в них
             self.X1 = _$b.offset().left + 100;
@@ -818,7 +822,7 @@ var InitMap = function () {
         };
 
         self.draw_childs = function (childs, parent_hash) {
-            //console.log("<Map.draw_childs>");
+            //clog("<Map.draw_childs>");
 
             //var ip;
             var iobj;
@@ -862,14 +866,14 @@ var InitMap = function () {
 
         self.onEdit = function (e) {
 
-            //console.log("<Polygon.prototype.onEdit> _s_f = " + _s_f);
-            //console.log("<Polygon.prototype.onEdit> e = ");
-            //console.log(_s_f);
-            //console.log(e.pageX);
+            //clog("<Polygon.prototype.onEdit> _s_f = " + _s_f);
+            //clog("<Polygon.prototype.onEdit> e = ");
+            //clog(_s_f);
+            //clog(e.pageX);
 
             var selected_area = self.selected_area;
             var edit_type = self.edit_type;
-            //console.log("<Polygon.prototype.onEdit> edit_type = " + edit_type);
+            //clog("<Polygon.prototype.onEdit> edit_type = " + edit_type);
 
             selected_area.dynamicEdit(selected_area[edit_type](e.pageX - selected_area.delta.x, e.pageY - selected_area.delta.y));
             selected_area.delta.x = e.pageX;
@@ -877,7 +881,7 @@ var InitMap = function () {
         };
 
         self.onDrawStop = function (e) {
-            console.log("<Polygon.onDrawStop>");
+            clog("<Polygon.onDrawStop>");
 
             var _n_f = self.new_area;
             //if (e.type == 'click' || (e.type == 'keydown' && e.keyCode == 13)) { // key Enter
@@ -900,7 +904,7 @@ var InitMap = function () {
         };
 
         self.onEditStop = function (e) {
-            //console.log("<Polygon.prototype.onEditStop>");
+            //clog("<Polygon.prototype.onEditStop>");
             var _s_f = self.selected_area,
                 edit_type = self.edit_type;
 
@@ -934,7 +938,7 @@ var InitMap = function () {
         };
 
         self.normalizeScale = function (scale) {
-            console.log('<self.normalizeScale>' + self.o.fitscale);
+            clog('<self.normalizeScale>' + self.o.fitscale);
             if (scale < self.o.fitscale) scale = self.o.fitscale;
             else if (scale > self.o.maxscale) scale = self.o.maxscale;
 
@@ -952,68 +956,89 @@ var InitMap = function () {
             self.x = self.normalizeX(self.container.width() * 0.5 - self.scale * self.contentWidth * x);
             self.y = self.normalizeY(self.container.height() * ry - self.scale * self.contentHeight * y);
 
-            console.log("<Map.zoomTo> Call moveTo.");
+            clog("<Map.zoomTo> Call moveTo.");
             self.moveTo(self.x, self.y, self.scale, duration, easing);
         };
 
+        // optimisation
+        var __moveToStep = function () {
+            //clog(self.map.attr('style'));
+            // left: -69.9985px; top: -299.999px;
+            // left: [-]{0,1}(\d+\.\d+px);
+
+            var str = self.map.attr('style');
+            var rx_left = /left: [-]{0,1}(\d+\.\d+)px;/;
+            var rx_top = /top: ([-]{0,1}\d+\.\d+)px;/;
+            var match_left = str.match(rx_left);
+            var match_right = str.match(rx_top);
+
+            if (match_left != null && match_right != null) {
+                var x = -1 * Number(match_left[1]); // ["left: -69.9985px;", "69.9985"]
+                var y = -1 * Number(match_right[1]); // ["left: -69.9985px;", "69.9985"]
+                var att = x + " " + y + " " + self.contentWidth + " " + self.contentHeight;
+                //clog(x + "; y = " + y);
+                self.svg.attr('viewBox', att);
+                self.svg_overlay.attr('viewBox', att);
+            }
+
+        };
+        var __moveToTimeout = function () {
+            $("#masked").removeClass('hiddn');
+        };
+        var __moveToAnimate = function () {
+            if (self.tooltip) self.tooltip.position();
+        };
+        
         // x,y - экранные координаты
         self.moveTo = function (x, y, scale, d, easing) {
-            console.log("<self.moveTo> x = " + x + "; y = " + y + "; scale = " + scale);
+            clog("<self.moveTo> x = " + x + "; y = " + y + "; scale = " + scale);
+
+            // если подан аргумент scale(масштаб)
+            // перемещаемся анимированно
             if (scale !== undefined) {
 
+                // на время движения скрываем слой с полосатой анимацией
                 if (self.current_area != null) {
                     $("#masked").addClass('hiddn');
-                    setTimeout(function () {
-                        $("#masked").removeClass('hiddn');
-                    }, d);
+                    setTimeout(__moveToTimeout, d);
+                    setTimeout(__moveToStep, d);
                 }
 
-                self.map.stop().animate({
+                self.map.stop().animate(
+                    {
                         'left': x,
                         'top': y,
                         'width': self.contentWidth * scale,
                         'height': self.contentHeight * scale
                     },
-                    {
-                        'step': function () {
-                            //console.log(self.map.attr('style'));
-                            // left: -69.9985px; top: -299.999px;
-                            // left: [-]{0,1}(\d+\.\d+px);
+                    //{ 'step': __moveToStep },
+                    d,
+                    easing,
+                    __moveToAnimate
+                );
 
-                            var str = self.map.attr('style');
-                            var rx_left = /left: [-]{0,1}(\d+\.\d+)px;/;
-                            var rx_top = /top: ([-]{0,1}\d+\.\d+)px;/;
-                            var match_left = str.match(rx_left);
-                            var match_right = str.match(rx_top);
-
-                            if (match_left != null && match_right != null) {
-                                var x = -1 * Number(match_left[1]); // ["left: -69.9985px;", "69.9985"]
-                                var y = -1 * Number(match_right[1]); // ["left: -69.9985px;", "69.9985"]
-                                var att = x + " " + y + " " + self.contentWidth + " " + self.contentHeight;
-                                //console.log(x + "; y = " + y);
-                                self.svg.attr('viewBox', att);
-                                self.svg_overlay.attr('viewBox', att);
-                            }
-
-                            if (self.current_area != null) self.current_area.invalidateAnimationMask();
-
-                        }
-                    },
-                    d, easing, function () {
-                        if (self.tooltip) self.tooltip.position();
-                    });
             }
+
+            // если не подан аргумент scale(масштаб)
+            // перемещаемся без анимации
             else {
+
                 self.map.css({
                     'left': x,
                     'top': y
                 });
-                self.svg.attr('viewBox', (-x) + " " + (-y) + " " + self.contentWidth + " " + self.contentHeight);
-                self.svg_overlay.attr('viewBox', (-x) + " " + (-y) + " " + self.contentWidth + " " + self.contentHeight);
-                if (self.current_area != null) self.current_area.invalidateAnimationMask();
+
+                var t = (-x) + " " + (-y) + " " + self.contentWidth * self.scale + " " + self.contentHeight * self.scale;
+                self.svg.attr('viewBox',t);
+                self.svg_overlay.attr('viewBox', t);
             }
-            if (self.tooltip) self.tooltip.position();
-            if (self.minimap) self.minimap.update(x, y);
+
+            if (self.current_area != null) {
+                self.current_area.invalidateAnimationMask();
+            }
+
+            //if (self.tooltip) self.tooltip.position();
+            //if (self.minimap) self.minimap.update(x, y);
         };
 
         // показать инфо о здании
@@ -1045,7 +1070,7 @@ var InitMap = function () {
 
         // показать инфо о просматриваемой площади
         self.showAreaInfo = function (area_hash, parent_building_hash) {
-            //console.log(area_hash);
+            //clog(area_hash);
 
             //"area_hash": {
             //        "id": 2,

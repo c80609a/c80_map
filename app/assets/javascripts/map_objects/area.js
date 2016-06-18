@@ -20,13 +20,13 @@ function Area() {
     var _cy = null;
 
     _this.init = function (options, parent_building_hash, pself) {
-        console.log("<Area.init>");
-        //console.log(parent_building_hash);
+        clog("<Area.init>");
+        //clog(parent_building_hash);
 
         _map = pself;
         _this._options = options;
         _this._options.parent_building_hash = parent_building_hash;
-        //console.log(_this._options.parent_building_hash);
+        //clog(_this._options.parent_building_hash);
 
 
         _this._polygon = Polygon.createFromSaved(options, false, _map);
@@ -51,9 +51,15 @@ function Area() {
 
     };
 
+    // optimisation
+    var timeoutEnter = function () {
+        _map.showAreaInfo(_this._options.area_hash, _this._options.parent_building_hash);
+        _map.setMode('view_area');
+    };
+
     _this.enter = function () {
-        //console.log("<Building.enter>");
-        //console.log(_this._options);
+        //clog("<Building.enter>");
+        //clog(_this._options);
 
         /* рассчитаем масштаб, при котором можно вписать прямоугольник дома в прямоугольник рабочей области */
 
@@ -66,19 +72,16 @@ function Area() {
         _map.x = _map.normalizeX(_map.CX - _map.scale * _cx - _map.container.offset().left);
         _map.y = _map.normalizeY(_map.CY - _map.scale * _cy - _map.container.offset().top);
 
-        console.log("<Area.enter> [qq] moveTo: " + _map.x + ", " + _map.y);
-        console.log("<Area.enter> Call moveTo.");
+        clog("<Area.enter> [qq] moveTo: " + _map.x + ", " + _map.y);
+        clog("<Area.enter> Call moveTo.");
         _map.moveTo(_map.x, _map.y, _map.scale, 400, 'easeInOutCubic');
 
-        setTimeout(function () {
-            _map.showAreaInfo(_this._options.area_hash, _this._options.parent_building_hash);
-            _map.setMode('view_area');
-        }, 400);
+        setTimeout(timeoutEnter, 400);
 
         var k;
         if (_map.current_area != null) {
             k = _map.current_area._polygon.parent().attr('class');
-            //console.log("k = " + k);
+            //clog("k = " + k);
             k = k.split('viewing_area').join("");
             _map.current_area._polygon.parent().attr("class", k);
         }
@@ -124,7 +127,7 @@ function Area() {
             ix = coords[i];
             iy = coords[i + 1];
 
-            //console.log(xmin + " VS " + ix);
+            //clog(xmin + " VS " + ix);
             xmin = (ix < xmin) ? ix : xmin;
             ymin = (iy < ymin) ? iy : ymin;
 
@@ -143,19 +146,19 @@ function Area() {
         _cx = xmin + (xmax - xmin) / 2;
         _cy = ymin + (ymax - ymin) / 2;
 
-        console.log("<Area._calcBBox> " +
+        clog("<Area._calcBBox> " +
             //xmin + "," + ymin + "; " + xmax + "," + ymax +
         "; center logical: " + _cx + "," + _cy + ", center screen: " + _map.rightX(_cx) + ", " + _map.rightY(_cy));
     };
 
     _this._mouse_in = function () {
-        //console.log('<Area._mouse_in>');
-        //console.log(_this._polygon);
+        //clog('<Area._mouse_in>');
+        //clog(_this._polygon);
         _this._polygon.attr('class', 'hover');
     };
 
     _this._mouse_out = function () {
-        //console.log('<Area._mouse_out>');
+        //clog('<Area._mouse_out>');
         _this._polygon.attr('class', '');
     };
 
@@ -170,7 +173,7 @@ function Area() {
             res += ix + "px " + iy + "px,"
         }
 
-        //console.log("<Area._calc_polygon_attr> res = " + res);
+        //clog("<Area._calc_polygon_attr> res = " + res);
         res = res.slice(0, res.length - 1);
         res = "-webkit-clip-path:polygon(" + res + ")";
         return res;
