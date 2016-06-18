@@ -690,10 +690,17 @@ var clog = function () {
         };
 
         self.onDrawStop = function (e) {
-            clog("<Polygon.onDrawStop>");
+            clog("<Map.onDrawStop>");
+
+            if (e != undefined) {
+                if (e.type == 'keydown' && e.keyCode == 13) {
+                    // its ok, continue execution..
+                } else {
+                    return
+                }
+            }
 
             var _n_f = self.new_area;
-            //if (e.type == 'click' || (e.type == 'keydown' && e.keyCode == 13)) { // key Enter
             if (_n_f.params.length >= 6) { //>= 3 points for polygon
                 _n_f.polyline = _n_f.polygon;
                 _n_f.polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
@@ -704,12 +711,9 @@ var clog = function () {
                 self.removeAllEvents();
                 self.new_area = null;
                 self.is_draw = false;
-                self.complete_creating_button_klass.onClick();
-                //    .setIsDraw(false)
-                //    .resetNewArea();
             }
-            //}
-            //e.stopPropagation();
+
+            self.setMode('editing');
         };
 
         self.onEditStop = function (e) {
