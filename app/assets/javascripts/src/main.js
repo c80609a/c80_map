@@ -298,8 +298,18 @@ var clog = function () {
 
             var map = self.map;
 
+            // * [X] реализовать условие "если dnd был маленький, то делать вызов onClick":
+            // защищаемся от "дрожания рук во время клика", когда мизерное движение в сотую доли
+            // секунды во время совершения клика заставляют программу думать, что это был drag-n-drop
+            var sx = map.data('startX');
+            var sy = map.data('startY');
+            var dx = sx - self.x;
+            var dy = sy - self.y;
+            var d = Math.sqrt(dx*dx + dy*dy);
+            var is_enough_for_dnd = d > 10;
+
             // если это в самом деле был drag\n\drop
-            if (self.dragging) {
+            if (self.dragging && is_enough_for_dnd) {
 
                 self.x = map.data('lastX');
                 self.y = map.data('lastY');
@@ -407,6 +417,9 @@ var clog = function () {
                 map.data('mouseY', event.pageY);
                 map.data('lastX', self.x);
                 map.data('lastY', self.y);
+
+                map.data('startX',self.x);
+                map.data('startY',self.y);
 
                 map.addClass('mdragging');
 
