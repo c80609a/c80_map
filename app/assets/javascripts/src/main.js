@@ -519,7 +519,7 @@ var clog = function () {
         var $building_info = $('.building_info');
         var $area_order_button = $('.area_order_button');
         var $container_buttons = $('#container_buttons');
-        var _is_debug_drawn = false;
+        var _is_debug_drawn = true;
 
         self.ivalidateViewArea = function () {
             //clog('<init> _$b.offset().left = ' + _$b.offset().left);

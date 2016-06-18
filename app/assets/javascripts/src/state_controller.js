@@ -53,8 +53,8 @@ function StateController() {
             case "editing":
 
                 // спрячем надписи "цена за метр" и адрес с телефоном
-                _this.left_side.css("top", -500);
-                _this.right_side.css("top", -500);
+                _this.left_side.css("top", -300);
+                _this.right_side.css("top", -300);
 
                 // покажем кнопку "добавить фигуру"
                 _this.new_button.css('opacity', '1');
@@ -97,7 +97,7 @@ function StateController() {
                 if (_this.building_info.data("init") == undefined) {
                     _this.building_info.data('init', _this.building_info.css("top"));
                 }
-                _this.building_info.css("top", -500);
+                _this.building_info.css("top", -300);
                 _this.building_info.css("display", "block");
 
                 _map.back_to_map_button_klass.hide();
@@ -123,8 +123,8 @@ function StateController() {
             // вошли в здание
             case "view_building":
                 // спрячем надписи "цена за метр" и адрес с телефоном
-                _this.left_side.css("top", -500);
-                _this.right_side.css("top", -500);
+                _this.left_side.css("top", -300);
+                _this.right_side.css("top", -300);
 
                 //_this.main_map.css('opacity','0.7');
                 _this.svg_overlay.css('display', 'block');
@@ -173,7 +173,7 @@ function StateController() {
                 _map.new_button_klass.resetState();
 
                 // спрячем инфу о здании
-                _this.building_info.css("top", -500);
+                _this.building_info.css("top", -300);
 
                 break;
         }
