@@ -152,7 +152,7 @@ Polygon.prototype.dynamicEdit = function (temp_params) {
 };
 
 Polygon.prototype.remove = function () {
-    app.removeNodeFromSvg(this.g);
+    this._map.removeNodeFromSvg(this.g);
 };
 
 Polygon.prototype.select = function () {
@@ -167,24 +167,9 @@ Polygon.prototype.deselect = function () {
     return this;
 };
 
-Polygon.prototype.toString = function () { //to html map area code
-    for (var i = 0, count = this.params.length, str = ''; i < count; i++) {
-        str += this.params[i];
-        if (i != count - 1) {
-            str += ', ';
-        }
-    }
-    return '<area shape="poly" coords="'
-        + str
-        + '"'
-        + (this.href ? ' href="' + this.href + '"' : '')
-        + (this.alt ? ' alt="' + this.alt + '"' : '')
-        + (this.title ? ' title="' + this.title + '"' : '')
-        + ' />';
-};
-
 Polygon.createFromSaved = function (params, is_overlay, self) {
     //console.log("<Polygon.createFromSaved>");
+    console.log("<Polygon.createFromSaved> is_overlay = " + is_overlay);
 
     var coords = params.coords,
         area = new Polygon(coords[0], coords[1], is_overlay, self);
@@ -204,14 +189,4 @@ Polygon.createFromSaved = function (params, is_overlay, self) {
 
     return area;
 
-};
-
-Polygon.prototype.toJSON = function () {
-    return {
-        type: 'polygon',
-        coords: this.params,
-        href: this.href,
-        alt: this.alt,
-        title: this.title
-    }
 };

@@ -16,20 +16,18 @@ function StateController() {
     _this.area_order_button = $('.area_order_button');
     _this.masked = $('#masked');
 
-    _this.prev_mode = null;
-
     _this.setMode = function (mode) {
 
         // Должен быть учёт, из какого состояния пришли в состояние рисования, и возвращаться в него
         //      * При рисовании, находясь внутри здания, возвращаться в 'edit_building'
         //      * При рисовании, находясь внутри площади, возвращаться в 'edit_area'
         if (mode == 'editing') {
-            mode = _this.prev_mode;
+            mode = _map.prev_mode;
         }
 
         clog('<StateController.setMode> mode = ' + mode);
 
-        _this.prev_mode = _map.mode;
+        _map.prev_mode = _map.mode;
         _map.mode = mode;
 
         // этот код коррелирует с [x9cs7]. Возможно, нужен рефакторинг.

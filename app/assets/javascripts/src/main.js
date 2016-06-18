@@ -55,11 +55,11 @@ var clog = function () {
             x: 0,
             y: 0
         };
-        self.state = null;
         self.svg = null;
         self.svg_overlay = null;
         self.container = null;
         self.mode = 'viewing';
+        self.prev_mode = null;
         self.setMode = null;
         self.selected_area = null;
         self.drawing_poligon = null;
@@ -202,7 +202,6 @@ var clog = function () {
             initAddControls();
 
             self.draw_childs(data["childs"]);
-            self.state = data;
 
             self.ivalidateViewArea();
 
@@ -626,6 +625,15 @@ var clog = function () {
             return self;
         };
 
+        self.removeNodeFromSvg = function(node, is_overlay) {
+            if (is_overlay) {
+                self.svg_overlay[0].removeChild(node);
+            } else {
+                self.svg[0].removeChild(node);
+            }
+            return this;
+        };
+
         self.svgRemoveAllNodes = function () {
             self.svg.empty();
         };
@@ -707,6 +715,14 @@ var clog = function () {
                 _n_f.g.replaceChild(_n_f.polygon, _n_f.polyline);
                 _n_f.setCoords(_n_f.params).deselect();
                 delete(_n_f.polyline);
+
+                // в зависимости от предыдущего состояния, создадим либо Здание, либо Площадь
+                if (self.prev_mode == "edit_building") {
+                    var a = new Area();
+                    a.init({ coords:_n_f.params }, self.current_building.options, self);
+                    a.is_new = true;
+                    _n_f.remove();
+                }
 
                 self.removeAllEvents();
                 self.drawing_poligon = null;

@@ -19,9 +19,15 @@ function Area() {
     var _cx = null;
     var _cy = null;
 
+    // если is_new, значит был полигон был
+    // нарисован и ждёт сохранения на сервере
+    _this.is_new = false;
+
     _this.init = function (options, parent_building_hash, pself) {
         clog("<Area.init>");
         //clog(parent_building_hash);
+
+        //clog(options);
 
         _map = pself;
         _this._options = options;
