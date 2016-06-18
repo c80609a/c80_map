@@ -157,53 +157,9 @@ var clog = function () {
                 'height': data.mapheight
             });
 
-            //var scale = 0.599999;
-            //
-            //var window_height = $(window).height() - 200;
-            //if (window_height < 400) window_height = 400;
-            //
-            //var window_width = $(window).width();
-            //var image_width = self.contentWidth * scale;
-            //var image_height = self.contentHeight * scale;
-            //
-            //self.o.x = (window_width - image_width)/2;
-            //self.o.y = (window_height - image_height)/2;
-            //self.o.scale = scale;
-
-            // Create minimap
-            /*if (self.o.minimap) {
-             self.minimap = new Minimap();
-             self.minimap.init();
-             }*/
-
-            // Create sidebar
-            /*if (self.o.sidebar) {
-             self.sidebar = new Sidebar();
-             self.sidebar.init();
-             self.sidebar.addCategories(data.categories);
-             }*/
-
             // Create new map layer
             var layer = $('<div></div>').addClass('mlayer').addClass(data["object_type"]).appendTo(self.map_layers); // .hide()
             $('<img>').attr('src', data["img"]).addClass('mmap-image').appendTo(layer);
-
-            // COMPONENTS
-
-            // Tooltip
-            /*self.tooltip = new Tooltip();
-             self.tooltip.init();*/
-
-            // Hover Tooltip
-            /*if (self.o.hovertip) {
-             self.hovertip = new HoverTooltip();
-             self.hovertip.init();
-             }*/
-
-            // Developer tools
-            //if (self.o.developer) self.devtools = new DevTools().init();
-
-            // Clear button
-            //if (self.o.clearbutton) self.clearbutton = new ClearButton().init();
 
             // Zoom buttons
             if (self.o.zoombuttons) {
@@ -241,50 +197,6 @@ var clog = function () {
                 e.init("#completeCreating", self);
 
             });
-
-            // Fullscreen
-            //if (self.o.fullscreen) self.fullscreen = new FullScreen().init();
-
-            // Levels
-            /*if (nrlevels > 1) {
-             self.levels = $('<div></div>').addClass('mapplic-levels');
-             var up = $('<a href="#"></a>').addClass('mapplic-levels-up').appendTo(self.levels);
-             self.levelselect.appendTo(self.levels);
-             var down = $('<a href="#"></a>').addClass('mapplic-levels-down').appendTo(self.levels);
-             self.container.append(self.levels);
-
-             self.levelselect.change(function() {
-             var value = $(this).val();
-             switchLevel(value);
-             });
-
-             up.click(function(e) {
-             e.preventDefault();
-             if (!$(this).hasClass('mapplic-disabled')) switchLevel('+');
-             });
-
-             down.click(function(e) {
-             e.preventDefault();
-             if (!$(this).hasClass('mapplic-disabled')) switchLevel('-');
-             });
-             }
-             switchLevel(shownLevel);*/
-
-            // Landmark mode
-            /*if (self.o.landmark) {
-             showLocation(self.o.landmark, 0);
-             }
-             else {
-             self.zoomTo(0.5, 0.5, 1, 0);
-             }*/
-
-            // Deeplinking
-            /*if (self.o.deeplinking) {
-             if (history.pushState) self.deeplinking = new Deeplinking();
-             else self.deeplinking = new DeeplinkingHash();
-
-             self.deeplinking.init();
-             }*/
 
             // Controls
             initAddControls();
@@ -371,117 +283,6 @@ var clog = function () {
             document.ondragstart = function () {
                 return false;
             }; // IE drag fix
-
-            // Double click
-           /* $(document).on('dblclick', '#svg', function (event) {
-                event.preventDefault();
-
-                var scale = self.scale;
-                self.scale = self.normalizeScale(scale * 2);
-
-                self.x = self.normalizeX(self.x - (event.pageX - self.container.offset().left - self.x) * (self.scale / scale - 1));
-                self.y = self.normalizeY(self.y - (event.pageY - self.container.offset().top - self.y) * (self.scale / scale - 1));
-                clog("<dblclick> self.moveTo: " + self.x + "," + self.y);
-
-                self.moveTo(self.x, self.y, self.scale, 400, 'easeInOutCubic');
-                self.mark_virgin = false;
-            });*/
-
-            // Mousewheel
-            /*$('#svg', self.el).bind('mousewheel DOMMouseScroll', function (event) {
-                //clog('wheel');
-                var delta = event.originalEvent.wheelDelta;
-                event.preventDefault();
-
-                var scale = self.scale;
-                //clog('<wheel> scale = ' + scale + "; delta = " + delta);
-                self.scale = self.normalizeScale(scale + .05 * delta / Math.abs(delta));
-
-                self.x = self.normalizeX(self.x - (event.pageX - self.container.offset().left - self.x) * (self.scale / scale - 1));
-                self.y = self.normalizeY(self.y - (event.pageY - self.container.offset().top - self.y) * (self.scale / scale - 1));
-
-                self.moveTo(self.x, self.y, self.scale, 200, 'easeOutCubic');
-                self.mark_virgin = false;
-            });*/
-
-            // Touch support
-            /*if (!('ontouchstart' in window || 'onmsgesturechange' in window)) return true;
-             mapbody.on('touchstart', function(e) {
-             self.dragging = false;
-
-             var orig = e.originalEvent,
-             pos = map.position();
-
-             map.data('touchY', orig.changedTouches[0].pageY - pos.top);
-             map.data('touchX', orig.changedTouches[0].pageX - pos.left);
-
-             mapbody.on('touchmove', function(e) {
-             e.preventDefault();
-             self.dragging = true;
-
-             var orig = e.originalEvent;
-             var touches = orig.touches.length;
-
-             if (touches == 1) {
-             self.x = normalizeX(orig.changedTouches[0].pageX - map.data('touchX'));
-             self.y = self.normalizeY(orig.changedTouches[0].pageY - map.data('touchY'));
-
-             self.moveTo(self.x, self.y, self.scale, 50);
-             }
-             else {
-             mapbody.off('touchmove');
-             }
-             });
-
-             mapbody.on('touchend', function(e) {
-             mapbody.off('touchmove touchend');
-             });
-             });
-
-             // Pinch zoom
-             var hammer = new Hammer(self.map[0], {
-             transform_always_block: true,
-             drag_block_horizontal: true,
-             drag_block_vertical: true
-             });
-
-             */
-            /* hammer fix */
-            /*
-             self.map.on('touchstart', function(e) {
-             if (e.originalEvent.touches.length > 1) hammer.get('pinch').set({ enable: true });
-             });
-
-             self.map.on('touchend', function(e) {
-             hammer.get('pinch').set({ enable: false });
-             });
-             */
-            /* hammer fix ends */
-            /*
-
-             var scale=1, last_scale;
-             hammer.on('pinchstart', function(e) {
-             self.dragging = false;
-
-             scale = self.scale / self.o.fitscale;
-             last_scale = scale;
-             });
-
-             hammer.on('pinch', function(e) {
-             self.dragging = true;
-
-             if (e.scale != 1) scale = Math.max(1, Math.min(last_scale * e.scale, 100));
-
-             var oldscale = self.scale;
-             self.scale = self.normalizeScale(scale * self.o.fitscale);
-
-             self.x = normalizeX(self.x - (e.center.x - self.container.offset().left - self.x) * (self.scale/oldscale - 1));
-             self.y = self.normalizeY(self.y - (e.center.y - self.y) * (self.scale/oldscale - 1)); // - self.container.offset().top
-
-             self.moveTo(self.x, self.y, self.scale, 100);
-             });*/
-
-            /* Add mousedown event for svg */
 
             function onSvgMousedown(e) {
                 clog("<onSvgMousedown> self.mode = " + self.mode);
