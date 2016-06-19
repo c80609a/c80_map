@@ -73,6 +73,7 @@ var clog = function () {
         self.current_area = null;
         self.is_draw = false;
         self.save_button_klass = null;
+        self.drawn_areas = {}; // если имеются нарисованные но несохранённые Площади - они хранятся тут
 
         // true, если:
         //- юзер не кликал по кнопкам zoom
@@ -722,10 +723,12 @@ var clog = function () {
 
                 // в зависимости от предыдущего состояния, создадим либо Здание, либо Площадь
                 if (self.prev_mode == "edit_building") {
+                    var bo = self.current_building.options;
                     var a = new Area();
-                    a.init({ coords:_n_f.params }, self.current_building.options, self);
+                    a.init({ coords:_n_f.params }, bo, self);
                     a.is_new = true;
                     _n_f.remove();
+                    self.drawn_areas[bo["id"]] = a;
                 }
 
                 self.removeAllEvents();

@@ -199,6 +199,7 @@ function Building() {
 
         _map = link_to_map;
         _options = options;
+        this.options = options;
         _polygon = Polygon.createFromSaved(options, false, _map);
         _polygon.building = _this;
 
@@ -292,7 +293,5 @@ function Building() {
     _this.resetOverlayZindex = function () {
         _image_overlay.css('z-index','3');
     };
-
-    _this.options = _options;
 
 }
