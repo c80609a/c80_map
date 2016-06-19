@@ -728,7 +728,7 @@ var clog = function () {
                     a.init({ coords:_n_f.params }, bo, self);
                     a.is_new = true;
                     _n_f.remove();
-                    self.drawn_areas[bo["id"]] = a;
+                    self.registerJustDrownArea(a, bo["id"]);
                 }
 
                 self.removeAllEvents();
@@ -747,6 +747,14 @@ var clog = function () {
             _s_f.setParams(_s_f.dynamicEdit(_s_f[edit_type](e.pageX - _s_f.delta.x, e.pageY - _s_f.delta.y)));
 
             self.removeAllEvents();
+        };
+
+        self.registerJustDrownArea = function (area, building_id) {
+            var xx = self.drawn_areas[building_id];
+            if (xx == undefined) {
+                xx = self.drawn_areas[building_id] = [];
+            }
+            xx.push(area);
         };
 
         self.normalizeX = function (x) {

@@ -146,6 +146,7 @@ function StateController() {
                 _this.area_order_button.css('display', 'none');
                 _map.edit_button_klass.setState('view_building', true); // [a1x7]
                 _map.current_building.resetOverlayZindex();
+                _map.save_button_klass.hide();
 
                 break;
 
@@ -191,7 +192,8 @@ function StateController() {
                 // покажем, возможно спрятанные, zoom кнопки
                 _this.mzoom_buttons.css('opacity', '1');
 
-                _map.save_button_klass.check_and_show();
+                _map.save_button_klass.show();
+                _map.save_button_klass.check_and_enable();
 
             break;
         }

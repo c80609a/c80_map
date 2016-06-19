@@ -19,7 +19,7 @@ function SaveChangesButton() {
         _this.el.on('click', _this.onClick);
     };
 
-    _this.check_and_show = function () {
+    _this.check_and_enable = function () {
 
         //check
         var mark_dirty = false;
@@ -29,9 +29,23 @@ function SaveChangesButton() {
         }
 
         // show
-        var d = mark_dirty ? 'block':'none';
-        _this.el.css('display',d);
+        //var d = mark_dirty ? 'block':'none';
+        //
+
+        // enable
+        if (mark_dirty) {
+            _this.el.removeClass('mapplic-disabled');
+        } else {
+            _this.el.addClass('mapplic-disabled');
+        }
 
     };
 
+    _this.hide = function () {
+        _this.el.css('display','none');
+    };
+
+    _this.show = function () {
+        _this.el.css('display','block');
+    };
 }
