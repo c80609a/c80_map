@@ -9,8 +9,7 @@ function SaveChangesButton() {
     _this.onClick = function (e) {
         if (_this.el.hasClass('disabled')) return;
         e.preventDefault();
-
-
+        _map.save_preloader_klass.toggle();
     };
 
     _this.init = function (button_css_selector, link_to_map) {

@@ -74,6 +74,7 @@ var clog = function () {
         self.is_draw = false;
         self.save_button_klass = null;
         self.drawn_areas = {}; // если имеются нарисованные но несохранённые Площади - они хранятся тут
+        self.save_preloader_klass = null;
 
         // true, если:
         //- юзер не кликал по кнопкам zoom
@@ -517,6 +518,9 @@ var clog = function () {
 
             self.back_to_map_button_klass = new BackToMapButton();
             self.back_to_map_button_klass.init("#container_buttons", self);
+
+            self.save_preloader_klass = new SavePreloader();
+            self.save_preloader_klass.init();
 
         };
 

@@ -3,6 +3,7 @@
 
 #= require_directory ./events
 #= require_directory ./map_objects
+#= require_directory ./view
 #= require_tree ./buttons
 
 #= require ./src/utils.js
