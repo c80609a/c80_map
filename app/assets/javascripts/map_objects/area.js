@@ -50,6 +50,12 @@ function Area() {
 
         _map = pself;
         _this._options = options;
+
+        // [4ddl5df]
+        if (_this._options["id"] == undefined) {
+            _this._options["id"] = Math.ceil((Math.random()*100000));
+        }
+
         _this._options.parent_building_hash = parent_building_hash;
         //clog(_this._options.parent_building_hash);
 
@@ -207,6 +213,7 @@ function Area() {
 
     _this.to_json = function () {
         return {
+            id:                 _this._options["id"],
             coords:             _this._options["coords"],
             parent_building_id: _this._options.parent_building_hash["id"]
         }

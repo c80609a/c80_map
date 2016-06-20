@@ -83,6 +83,9 @@ function StateController() {
 
                 _this.main_map.css('opacity', '1');
 
+                _map.save_button_klass.show();
+                _map.save_button_klass.check_and_enable();
+
                 break;
 
             // перешли в состояние
@@ -124,6 +127,10 @@ function StateController() {
                 // актуально, когда входим в это состояние
                 // из здания\площади, нажав кнопку "обратно на карту"
                 _map.edit_button_klass.setState('viewing', true); // [a1x7]
+
+                if (_map.save_button_klass) {
+                    _map.save_button_klass.hide();
+                }
 
                 break;
 

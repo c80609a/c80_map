@@ -8,33 +8,42 @@ function SaveChangesButton() {
 
     var sendDataToServer = function () {
 
-        var areas = {};
-        var building_areas;
-        var iarea;
+        var areas;
+        var buildings;
+        var i, len;
 
-        for (var building_id in _map.drawn_areas) {
-            building_areas = _map.drawn_areas[building_id];
-            areas[building_id] = [];
-
-            for (var i = 0; i < building_areas.length; i++) {
-                iarea = building_areas[i];
-                areas[building_id.split('b').join()].push(iarea.to_json());
+        len = _map.drawn_areas.length;
+        if (len > 0) {
+            areas = [];
+            for (i = 0; i < len; i++) {
+                areas.push(_map.drawn_areas[i].to_json());
             }
+        }
 
+        len = _map.drawn_buildings.length;
+        if (len > 0) {
+            buildings = [];
+            for (i = 0; i < len; i++) {
+                buildings.push(_map.drawn_buildings[i].to_json());
+            }
         }
 
         $.ajax({
             url: '/save_map_data',
             type: 'POST',
             data: {
-                areas: areas
+                areas: areas,
+                buildings: buildings
             },
             dataType: 'json'
         }).done(sendDataToServerDone);
     };
 
     var sendDataToServerDone = function (data, result) {
-
+        console.log("<ButtonSave.sendDataToServerDone> data,result:");
+        console.log(data);
+        console.log(result);
+        console.log("<ButtonSave.sendDataToServerDone> ------------");
     };
 
     _this.onClick = function (e) {
@@ -53,15 +62,7 @@ function SaveChangesButton() {
     _this.check_and_enable = function () {
 
         //check
-        var mark_dirty = false;
-        for (var bid in _map.drawn_areas) {
-            mark_dirty = true;
-            break;
-        }
-
-        // show
-        //var d = mark_dirty ? 'block':'none';
-        //
+        var mark_dirty = _map.drawn_areas.length || _map.drawn_buildings.length;
 
         // enable
         if (mark_dirty) {

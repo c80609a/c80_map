@@ -199,7 +199,13 @@ function Building() {
 
         _map = link_to_map;
         _options = options;
-        this.options = options;
+        _this.options = options;
+
+        // [4ddl5df]: в случае, если это только что отрисованное Здание - генерим временный случайный id
+        if (_this.options["id"] == undefined) {
+            _this.options["id"] = Math.ceil((Math.random()*100000));
+        }
+
         _polygon = Polygon.createFromSaved(options, false, _map);
         _polygon.building = _this;
 
@@ -296,7 +302,8 @@ function Building() {
 
     _this.to_json = function () {
         return {
-            coords: _this._options["coords"]
+            id:     _this.options["id"],
+            coords: _this.options["coords"]
         }
     }
 }
