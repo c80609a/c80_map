@@ -10,6 +10,7 @@ function StateController() {
     _this.new_button = $('.mapplic-new-button');
     _this.mzoom_buttons = $('.mzoom_buttons');
     _this.map_creating = $('#map_creating');
+    _this.map_editing = $('#map_editing');
     _this.main_map = $('.main_map');
     _this.svg_overlay = $('#svg_overlay');
     _this.building_info = $('.building_info');
@@ -21,7 +22,8 @@ function StateController() {
         // Должен быть учёт, из какого состояния пришли в состояние рисования, и возвращаться в него
         //      * При рисовании, находясь внутри здания, возвращаться в 'edit_building'
         //      * При рисовании, находясь внутри площади, возвращаться в 'edit_area'
-        if (mode == 'editing') {
+        // За исключением ситуации, когда начали редактировать, находясь на карте
+        if (mode == 'editing' && _map.prev_mode != 'viewing') {
             mode = _map.prev_mode;
         }
 
@@ -50,6 +52,7 @@ function StateController() {
         if (_this.left_side.length == 0) _this.left_side = $('#left_side');
         if (_this.mzoom_buttons.length == 0) _this.mzoom_buttons = $('.mzoom_buttons');
         if (_this.map_creating.length == 0) _this.map_creating = $('#map_creating');
+        if (_this.map_editing.length == 0) _this.map_editing = $('#map_editing');
         if (_this.main_map.length == 0) _this.main_map = $('.main_map');
         if (_this.svg_overlay.length == 0) _this.svg_overlay = $('#svg_overlay');
         if (_this.building_info.length == 0) _this.building_info = $('.building_info');
@@ -73,6 +76,7 @@ function StateController() {
 
                 // спрячем статусную область
                 _this.map_creating.css('display', 'none');
+                _this.map_editing.css('display', 'block');
 
                 // покажем кнопки, присущие этому режиму
                 _this.mzoom_buttons.css('opacity', '1');
@@ -99,7 +103,9 @@ function StateController() {
                 _this.new_button.css('opacity', '0');
                 _this.new_button.addClass('mapplic-disabled');
                 _this.mzoom_buttons.css('opacity', '1');
+
                 _this.map_creating.css('display', 'none');
+                _this.map_editing.css('display', 'none');
 
                 _this.main_map.css('opacity', '1');
                 _this.svg_overlay.css('display', 'none');
@@ -125,6 +131,7 @@ function StateController() {
             case "creating":
                 //_this.mzoom_buttons.css('opacity', '0');
                 _this.map_creating.css('display', 'block');
+                _this.map_editing.css('display', 'none');
 
                 _this.main_map.css('opacity', '1');
 

@@ -73,7 +73,8 @@ var clog = function () {
         self.current_area = null;
         self.is_draw = false;
         self.save_button_klass = null;
-        self.drawn_areas = {}; // если имеются нарисованные но несохранённые Площади - они хранятся тут
+        self.drawn_areas = []; // если имеются нарисованные но несохранённые Площади - они хранятся тут
+        self.drawn_buildings = []; // если имеются нарисованные но несохранённые Здания - они хранятся тут
         self.save_preloader_klass = null;
 
         // true, если:
@@ -730,9 +731,16 @@ var clog = function () {
                     var bo = self.current_building.options;
                     var a = new Area();
                     a.init({ coords:_n_f.params }, bo, self);
-                    a.is_new = true;
-                    _n_f.remove();
-                    self.registerJustDrownArea(a, bo["id"]);
+                    //a.is_new = true;
+                    _n_f.remove(); // удаляем нарисованный полигон, т.к. его уже заменили полигоном Area
+                    self.registerJustDrownArea(a);
+                }
+                else if (self.prev_mode == 'editing') {
+                    var b = new Building();
+                    b.init({ coords:_n_f.params }, self);
+                    //b.is_new = true;
+                    _n_f.remove(); // удаляем нарисованный полигон, т.к. его уже заменили полигоном Building
+                    self.registerJustDrownBuilding(b);
                 }
 
                 self.removeAllEvents();
@@ -753,12 +761,12 @@ var clog = function () {
             self.removeAllEvents();
         };
 
-        self.registerJustDrownArea = function (area, building_id) {
-            var xx = self.drawn_areas[building_id];
-            if (xx == undefined) {
-                xx = self.drawn_areas[building_id] = [];
-            }
-            xx.push(area);
+        self.registerJustDrownArea = function (area) {
+            self.drawn_areas.push(area);
+        };
+
+        self.registerJustDrownBuilding = function (building) {
+            self.drawn_buildings.push(building);
         };
 
         self.normalizeX = function (x) {

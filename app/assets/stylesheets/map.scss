@@ -521,7 +521,8 @@
       display: none;
     }
 
-    div#map_creating {
+    div.status_block {
+
       > * {
         float: left;
         line-height: 37px;
@@ -540,9 +541,17 @@
         width: auto;
       }
 
-      a#cancelCreating {
-        background-color: #a10000;
+      &#map_creating {
+
+        a#cancelCreating {
+          background-color: #a10000;
+        }
       }
+
+      &#map_editing {
+
+      }
+
     }
 
   }

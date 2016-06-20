@@ -294,4 +294,9 @@ function Building() {
         _image_overlay.css('z-index','3');
     };
 
+    _this.to_json = function () {
+        return {
+            coords: _this._options["coords"]
+        }
+    }
 }

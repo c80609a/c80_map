@@ -6,10 +6,42 @@ function SaveChangesButton() {
     var _this = this;
     _this.el = null;
 
+    var sendDataToServer = function () {
+
+        var areas = {};
+        var building_areas;
+        var iarea;
+
+        for (var building_id in _map.drawn_areas) {
+            building_areas = _map.drawn_areas[building_id];
+            areas[building_id] = [];
+
+            for (var i = 0; i < building_areas.length; i++) {
+                iarea = building_areas[i];
+                areas[building_id.split('b').join()].push(iarea.to_json());
+            }
+
+        }
+
+        $.ajax({
+            url: '/save_map_data',
+            type: 'POST',
+            data: {
+                areas: areas
+            },
+            dataType: 'json'
+        }).done(sendDataToServerDone);
+    };
+
+    var sendDataToServerDone = function (data, result) {
+
+    };
+
     _this.onClick = function (e) {
         if (_this.el.hasClass('disabled')) return;
         e.preventDefault();
-        _map.save_preloader_klass.toggle();
+        _map.save_preloader_klass.show();
+        sendDataToServer();
     };
 
     _this.init = function (button_css_selector, link_to_map) {
