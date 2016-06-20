@@ -9,11 +9,7 @@ function CompleteCreatingButton() {
     _this.onClick = function (e) {
         console.log("<CompleteCreatingButton.onClick>");
         if (e != null) e.preventDefault();
-        if (_map.new_area != null) {
-            _map.onDrawStop();
-        }
-
-        _map.setMode("editing");
+        _map.onDrawStop();
     };
 
     _this.init = function (button_css_selector, link_to_map) {

@@ -19,12 +19,43 @@ function Area() {
     var _cx = null;
     var _cy = null;
 
+    // если is_new, значит был полигон был
+    // нарисован и ждёт сохранения на сервере
+    //_this.is_new = false;
+
     _this.init = function (options, parent_building_hash, pself) {
         clog("<Area.init>");
-        //clog(parent_building_hash);
+        //clog(parent_building_hash); // => see building.js init comment
+
+        //clog(options);
+        /*{
+            "id": 1,
+            "object_type": "area",
+            "area_hash": {
+                "id": 2,
+                "title": "Площадь 2.12",
+                "is_free": false,
+                "props": {
+                "square": "100 кв.м.",
+                "floor_height": "6 кв. м",
+                "column_step": "2 м",
+                "gate_type": "распашные",
+                "communications": "Интернет, электричество, водоснабжение",
+                "price": "от 155 руб/кв.м в месяц"
+            }
+        },
+            "coords": [998.8649298732183,1717.326608643258,998.8649298732183,1717.326608643258,1230.8649298732184,1631.326608643258,1254.8649298732184,1663.326608643258,1160.8649298732184,1695.326608643258,1214.8649298732184,1803.326608643258,1066.8649298732184,1862.326608643258
+        ]
+        }*/
 
         _map = pself;
         _this._options = options;
+
+        // [4ddl5df]
+        if (_this._options["id"] == undefined) {
+            _this._options["id"] = Math.ceil((Math.random()*100000));
+        }
+
         _this._options.parent_building_hash = parent_building_hash;
         //clog(_this._options.parent_building_hash);
 
@@ -180,4 +211,11 @@ function Area() {
 
     }
 
+    _this.to_json = function () {
+        return {
+            id:                 _this._options["id"],
+            coords:             _this._options["coords"],
+            parent_building_id: _this._options.parent_building_hash["id"]
+        }
+    }
 }

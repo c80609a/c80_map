@@ -10,6 +10,7 @@ function StateController() {
     _this.new_button = $('.mapplic-new-button');
     _this.mzoom_buttons = $('.mzoom_buttons');
     _this.map_creating = $('#map_creating');
+    _this.map_editing = $('#map_editing');
     _this.main_map = $('.main_map');
     _this.svg_overlay = $('#svg_overlay');
     _this.building_info = $('.building_info');
@@ -17,7 +18,18 @@ function StateController() {
     _this.masked = $('#masked');
 
     _this.setMode = function (mode) {
-        console.log('<StateController.setMode> mode = ' + mode);
+
+        // Должен быть учёт, из какого состояния пришли в состояние рисования, и возвращаться в него
+        //      * При рисовании, находясь внутри здания, возвращаться в 'edit_building'
+        //      * При рисовании, находясь внутри площади, возвращаться в 'edit_area'
+        // За исключением ситуации, когда начали редактировать, находясь на карте
+        if (mode == 'editing' && _map.prev_mode != 'viewing') {
+            mode = _map.prev_mode;
+        }
+
+        clog('<StateController.setMode> mode = ' + mode);
+
+        _map.prev_mode = _map.mode;
         _map.mode = mode;
 
         // этот код коррелирует с [x9cs7]. Возможно, нужен рефакторинг.
@@ -40,6 +52,7 @@ function StateController() {
         if (_this.left_side.length == 0) _this.left_side = $('#left_side');
         if (_this.mzoom_buttons.length == 0) _this.mzoom_buttons = $('.mzoom_buttons');
         if (_this.map_creating.length == 0) _this.map_creating = $('#map_creating');
+        if (_this.map_editing.length == 0) _this.map_editing = $('#map_editing');
         if (_this.main_map.length == 0) _this.main_map = $('.main_map');
         if (_this.svg_overlay.length == 0) _this.svg_overlay = $('#svg_overlay');
         if (_this.building_info.length == 0) _this.building_info = $('.building_info');
@@ -53,8 +66,8 @@ function StateController() {
             case "editing":
 
                 // спрячем надписи "цена за метр" и адрес с телефоном
-                _this.left_side.css("top", -500);
-                _this.right_side.css("top", -500);
+                _this.left_side.css("top", -300);
+                _this.right_side.css("top", -300);
 
                 // покажем кнопку "добавить фигуру"
                 _this.new_button.css('opacity', '1');
@@ -63,18 +76,22 @@ function StateController() {
 
                 // спрячем статусную область
                 _this.map_creating.css('display', 'none');
+                _this.map_editing.css('display', 'block');
 
                 // покажем кнопки, присущие этому режиму
                 _this.mzoom_buttons.css('opacity', '1');
 
                 _this.main_map.css('opacity', '1');
 
+                _map.save_button_klass.show();
+                _map.save_button_klass.check_and_enable();
+
                 break;
 
             // перешли в состояние
             // просмотра карты, все здания с крышами
             case "viewing":
-                //console.log("_this.left_side.data('init') = " + _this.left_side.data('init'));
+                //clog("_this.left_side.data('init') = " + _this.left_side.data('init'));
 
                 // покажем надписи "цена за метр" и адрес с телефоном
                 if (_this.left_side.data('init') == undefined) {
@@ -89,7 +106,9 @@ function StateController() {
                 _this.new_button.css('opacity', '0');
                 _this.new_button.addClass('mapplic-disabled');
                 _this.mzoom_buttons.css('opacity', '1');
+
                 _this.map_creating.css('display', 'none');
+                _this.map_editing.css('display', 'none');
 
                 _this.main_map.css('opacity', '1');
                 _this.svg_overlay.css('display', 'none');
@@ -97,7 +116,7 @@ function StateController() {
                 if (_this.building_info.data("init") == undefined) {
                     _this.building_info.data('init', _this.building_info.css("top"));
                 }
-                _this.building_info.css("top", -500);
+                _this.building_info.css("top", -300);
                 _this.building_info.css("display", "block");
 
                 _map.back_to_map_button_klass.hide();
@@ -109,12 +128,17 @@ function StateController() {
                 // из здания\площади, нажав кнопку "обратно на карту"
                 _map.edit_button_klass.setState('viewing', true); // [a1x7]
 
+                if (_map.save_button_klass) {
+                    _map.save_button_klass.hide();
+                }
+
                 break;
 
             // перешли в состояние рисования полигона
             case "creating":
-                _this.mzoom_buttons.css('opacity', '0');
+                //_this.mzoom_buttons.css('opacity', '0');
                 _this.map_creating.css('display', 'block');
+                _this.map_editing.css('display', 'none');
 
                 _this.main_map.css('opacity', '1');
 
@@ -123,8 +147,8 @@ function StateController() {
             // вошли в здание
             case "view_building":
                 // спрячем надписи "цена за метр" и адрес с телефоном
-                _this.left_side.css("top", -500);
-                _this.right_side.css("top", -500);
+                _this.left_side.css("top", -300);
+                _this.right_side.css("top", -300);
 
                 //_this.main_map.css('opacity','0.7');
                 _this.svg_overlay.css('display', 'block');
@@ -136,6 +160,7 @@ function StateController() {
                 _this.area_order_button.css('display', 'none');
                 _map.edit_button_klass.setState('view_building', true); // [a1x7]
                 _map.current_building.resetOverlayZindex();
+                _map.save_button_klass.hide();
 
                 break;
 
@@ -152,9 +177,9 @@ function StateController() {
                 _this.area_order_button.css("width", tq);
                 _this.area_order_button.css('display', 'block');
                 _map.edit_button_klass.setState('view_area', true); // [a1x7]
-                break;
+            break;
 
-            // начали редактировать, находясь в здании
+            // редактируем, находясь в здании
             case "edit_building":
                 _map.back_to_map_button_klass.hide();
 
@@ -173,9 +198,18 @@ function StateController() {
                 _map.new_button_klass.resetState();
 
                 // спрячем инфу о здании
-                _this.building_info.css("top", -500);
+                _this.building_info.css("top", -300);
 
-                break;
+                // спрячем статус строку "вы создаёте полигон"
+                _this.map_creating.css('display', 'none');
+
+                // покажем, возможно спрятанные, zoom кнопки
+                _this.mzoom_buttons.css('opacity', '1');
+
+                _map.save_button_klass.show();
+                _map.save_button_klass.check_and_enable();
+
+            break;
         }
     };
 

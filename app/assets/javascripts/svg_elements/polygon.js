@@ -123,71 +123,6 @@ Polygon.prototype.dynamicDraw = function (x, y, right_angle) {
     return temp_params;
 };
 
-/*Polygon.prototype.onDraw = function (e) {
-    var _n_f = this._map.new_area;
-    var right_angle = e.shiftKey ? true : false;
-
-    _n_f.dynamicDraw(this._map.rightX(e.pageX), this._map.rightY(e.pageY), right_angle);
-};*/
-
-/*Polygon.prototype.onDrawAddPoint = function (e) {
-    //console.log("<Polygon.onDrawAddPoint>");
-
-    //console.log("<Polygon.onDrawAddPoint> e.target = ");
-    //console.log(e.target);
-
-    //console.log("<Polygon.onDrawAddPoint> helper[0].helper = ");
-    //console.log(this._map.new_area.helpers[0].helper);
-
-    //console.log($(this._map.new_area.helpers[0].helper).attr("x") + "; " + $(e.target).attr("x"));
-
-    //console.log("<Polygon.onDrawAddPoint> e = ");
-    //console.log(e);
-
-    // если кликнули в первую точку фигуры - заканчиваем рисование
-    var $et = $(e.target);
-    var $h = $(this._map.new_area.helpers[0].helper);
-    if ($et.attr('x') == $h.attr('x') && $et.attr('y') == $h.attr('y')) {
-        this._map.new_area.onDrawStop();
-        return;
-    }
-
-    var x = this._map.rightX(e.pageX),
-        y = this._map.rightY(e.pageY),
-
-        _n_f = this._map.new_area;
-
-    if (e.shiftKey) {
-        var right_coords = _n_f.right_angle(x, y);
-        x = right_coords.x;
-        y = right_coords.y;
-    }
-    _n_f.addPoint(x, y);
-};*/
-
-/*Polygon.prototype.onDrawStop = function (*//*e*//*) {
-    console.log("<Polygon.onDrawStop>");
-
-    var _n_f = this._map.new_area;
-    //if (e.type == 'click' || (e.type == 'keydown' && e.keyCode == 13)) { // key Enter
-    if (_n_f.params.length >= 6) { //>= 3 points for polygon
-        _n_f.polyline = _n_f.polygon;
-        _n_f.polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
-        _n_f.g.replaceChild(_n_f.polygon, _n_f.polyline);
-        _n_f.setCoords(_n_f.params).deselect();
-        delete(_n_f.polyline);
-
-        this._map.removeAllEvents();
-        this._map.new_area = null;
-        this._map.is_draw = false;
-        this._map.complete_creating_button_klass.onClick();
-        //    .setIsDraw(false)
-        //    .resetNewArea();
-    }
-    //}
-    //e.stopPropagation();
-};*/
-
 Polygon.prototype.move = function (x, y) { //offset x and y
     var temp_params = Object.create(this.params);
 
@@ -216,34 +151,8 @@ Polygon.prototype.dynamicEdit = function (temp_params) {
     return temp_params;
 };
 
-/*Polygon.prototype.onEdit = function (e) {
-    var selected_area = this._map.selected_area;
-
-    //console.log("<Polygon.prototype.onEdit> _s_f = " + _s_f);
-    //console.log("<Polygon.prototype.onEdit> e = ");
-    //console.log(_s_f);
-    //console.log(e.pageX);
-
-    var edit_type = this._map.edit_type;
-    //console.log("<Polygon.prototype.onEdit> edit_type = " + edit_type);
-
-    selected_area.dynamicEdit(selected_area[edit_type](e.pageX - selected_area.delta.x, e.pageY - selected_area.delta.y));
-    selected_area.delta.x = e.pageX;
-    selected_area.delta.y = e.pageY;
-};*/
-
-/*Polygon.prototype.onEditStop = function (e) {
-    //console.log("<Polygon.prototype.onEditStop>");
-    var _s_f = this._map.selected_area,
-        edit_type = this._map.edit_type;
-
-    _s_f.setParams(_s_f.dynamicEdit(_s_f[edit_type](e.pageX - _s_f.delta.x, e.pageY - _s_f.delta.y)));
-
-    this._map.removeAllEvents();
-};*/
-
 Polygon.prototype.remove = function () {
-    app.removeNodeFromSvg(this.g);
+    this._map.removeNodeFromSvg(this.g);
 };
 
 Polygon.prototype.select = function () {
@@ -258,24 +167,9 @@ Polygon.prototype.deselect = function () {
     return this;
 };
 
-Polygon.prototype.toString = function () { //to html map area code
-    for (var i = 0, count = this.params.length, str = ''; i < count; i++) {
-        str += this.params[i];
-        if (i != count - 1) {
-            str += ', ';
-        }
-    }
-    return '<area shape="poly" coords="'
-        + str
-        + '"'
-        + (this.href ? ' href="' + this.href + '"' : '')
-        + (this.alt ? ' alt="' + this.alt + '"' : '')
-        + (this.title ? ' title="' + this.title + '"' : '')
-        + ' />';
-};
-
 Polygon.createFromSaved = function (params, is_overlay, self) {
     //console.log("<Polygon.createFromSaved>");
+    console.log("<Polygon.createFromSaved> is_overlay = " + is_overlay);
 
     var coords = params.coords,
         area = new Polygon(coords[0], coords[1], is_overlay, self);
@@ -291,18 +185,8 @@ Polygon.createFromSaved = function (params, is_overlay, self) {
     delete(area.polyline);
 
     self.is_draw = false;
-    self.new_area = null;
+    self.drawing_poligon = null;
 
     return area;
 
-};
-
-Polygon.prototype.toJSON = function () {
-    return {
-        type: 'polygon',
-        coords: this.params,
-        href: this.href,
-        alt: this.alt,
-        title: this.title
-    }
 };

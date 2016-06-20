@@ -31,7 +31,7 @@ var InitMap = function () {
 };
 
 var clog = function () {
-    //console.log(arguments);
+    console.log(arguments[0]);
 };
 
 (function () {
@@ -55,14 +55,14 @@ var clog = function () {
             x: 0,
             y: 0
         };
-        self.state = null;
         self.svg = null;
         self.svg_overlay = null;
         self.container = null;
         self.mode = 'viewing';
+        self.prev_mode = null;
         self.setMode = null;
         self.selected_area = null;
-        self.new_area = null;
+        self.drawing_poligon = null;
         self.events = [];
         self.edit_type = null;
         self.new_button_klass = null;
@@ -72,6 +72,10 @@ var clog = function () {
         self.current_building = null;
         self.current_area = null;
         self.is_draw = false;
+        self.save_button_klass = null;
+        self.drawn_areas = []; // если имеются нарисованные но несохранённые Площади - они хранятся тут
+        self.drawn_buildings = []; // если имеются нарисованные но несохранённые Здания - они хранятся тут
+        self.save_preloader_klass = null;
 
         // true, если:
         //- юзер не кликал по кнопкам zoom
@@ -157,53 +161,9 @@ var clog = function () {
                 'height': data.mapheight
             });
 
-            //var scale = 0.599999;
-            //
-            //var window_height = $(window).height() - 200;
-            //if (window_height < 400) window_height = 400;
-            //
-            //var window_width = $(window).width();
-            //var image_width = self.contentWidth * scale;
-            //var image_height = self.contentHeight * scale;
-            //
-            //self.o.x = (window_width - image_width)/2;
-            //self.o.y = (window_height - image_height)/2;
-            //self.o.scale = scale;
-
-            // Create minimap
-            /*if (self.o.minimap) {
-             self.minimap = new Minimap();
-             self.minimap.init();
-             }*/
-
-            // Create sidebar
-            /*if (self.o.sidebar) {
-             self.sidebar = new Sidebar();
-             self.sidebar.init();
-             self.sidebar.addCategories(data.categories);
-             }*/
-
             // Create new map layer
             var layer = $('<div></div>').addClass('mlayer').addClass(data["object_type"]).appendTo(self.map_layers); // .hide()
             $('<img>').attr('src', data["img"]).addClass('mmap-image').appendTo(layer);
-
-            // COMPONENTS
-
-            // Tooltip
-            /*self.tooltip = new Tooltip();
-             self.tooltip.init();*/
-
-            // Hover Tooltip
-            /*if (self.o.hovertip) {
-             self.hovertip = new HoverTooltip();
-             self.hovertip.init();
-             }*/
-
-            // Developer tools
-            //if (self.o.developer) self.devtools = new DevTools().init();
-
-            // Clear button
-            //if (self.o.clearbutton) self.clearbutton = new ClearButton().init();
 
             // Zoom buttons
             if (self.o.zoombuttons) {
@@ -240,57 +200,15 @@ var clog = function () {
                 e = new CompleteCreatingButton();
                 e.init("#completeCreating", self);
 
+                self.save_button_klass = new SaveChangesButton();
+                self.save_button_klass.init('.mapplic-save-button', self);
+
             });
-
-            // Fullscreen
-            //if (self.o.fullscreen) self.fullscreen = new FullScreen().init();
-
-            // Levels
-            /*if (nrlevels > 1) {
-             self.levels = $('<div></div>').addClass('mapplic-levels');
-             var up = $('<a href="#"></a>').addClass('mapplic-levels-up').appendTo(self.levels);
-             self.levelselect.appendTo(self.levels);
-             var down = $('<a href="#"></a>').addClass('mapplic-levels-down').appendTo(self.levels);
-             self.container.append(self.levels);
-
-             self.levelselect.change(function() {
-             var value = $(this).val();
-             switchLevel(value);
-             });
-
-             up.click(function(e) {
-             e.preventDefault();
-             if (!$(this).hasClass('mapplic-disabled')) switchLevel('+');
-             });
-
-             down.click(function(e) {
-             e.preventDefault();
-             if (!$(this).hasClass('mapplic-disabled')) switchLevel('-');
-             });
-             }
-             switchLevel(shownLevel);*/
-
-            // Landmark mode
-            /*if (self.o.landmark) {
-             showLocation(self.o.landmark, 0);
-             }
-             else {
-             self.zoomTo(0.5, 0.5, 1, 0);
-             }*/
-
-            // Deeplinking
-            /*if (self.o.deeplinking) {
-             if (history.pushState) self.deeplinking = new Deeplinking();
-             else self.deeplinking = new DeeplinkingHash();
-
-             self.deeplinking.init();
-             }*/
 
             // Controls
             initAddControls();
 
             self.draw_childs(data["childs"]);
-            self.state = data;
 
             self.ivalidateViewArea();
 
@@ -372,117 +290,6 @@ var clog = function () {
                 return false;
             }; // IE drag fix
 
-            // Double click
-           /* $(document).on('dblclick', '#svg', function (event) {
-                event.preventDefault();
-
-                var scale = self.scale;
-                self.scale = self.normalizeScale(scale * 2);
-
-                self.x = self.normalizeX(self.x - (event.pageX - self.container.offset().left - self.x) * (self.scale / scale - 1));
-                self.y = self.normalizeY(self.y - (event.pageY - self.container.offset().top - self.y) * (self.scale / scale - 1));
-                clog("<dblclick> self.moveTo: " + self.x + "," + self.y);
-
-                self.moveTo(self.x, self.y, self.scale, 400, 'easeInOutCubic');
-                self.mark_virgin = false;
-            });*/
-
-            // Mousewheel
-            /*$('#svg', self.el).bind('mousewheel DOMMouseScroll', function (event) {
-                //clog('wheel');
-                var delta = event.originalEvent.wheelDelta;
-                event.preventDefault();
-
-                var scale = self.scale;
-                //clog('<wheel> scale = ' + scale + "; delta = " + delta);
-                self.scale = self.normalizeScale(scale + .05 * delta / Math.abs(delta));
-
-                self.x = self.normalizeX(self.x - (event.pageX - self.container.offset().left - self.x) * (self.scale / scale - 1));
-                self.y = self.normalizeY(self.y - (event.pageY - self.container.offset().top - self.y) * (self.scale / scale - 1));
-
-                self.moveTo(self.x, self.y, self.scale, 200, 'easeOutCubic');
-                self.mark_virgin = false;
-            });*/
-
-            // Touch support
-            /*if (!('ontouchstart' in window || 'onmsgesturechange' in window)) return true;
-             mapbody.on('touchstart', function(e) {
-             self.dragging = false;
-
-             var orig = e.originalEvent,
-             pos = map.position();
-
-             map.data('touchY', orig.changedTouches[0].pageY - pos.top);
-             map.data('touchX', orig.changedTouches[0].pageX - pos.left);
-
-             mapbody.on('touchmove', function(e) {
-             e.preventDefault();
-             self.dragging = true;
-
-             var orig = e.originalEvent;
-             var touches = orig.touches.length;
-
-             if (touches == 1) {
-             self.x = normalizeX(orig.changedTouches[0].pageX - map.data('touchX'));
-             self.y = self.normalizeY(orig.changedTouches[0].pageY - map.data('touchY'));
-
-             self.moveTo(self.x, self.y, self.scale, 50);
-             }
-             else {
-             mapbody.off('touchmove');
-             }
-             });
-
-             mapbody.on('touchend', function(e) {
-             mapbody.off('touchmove touchend');
-             });
-             });
-
-             // Pinch zoom
-             var hammer = new Hammer(self.map[0], {
-             transform_always_block: true,
-             drag_block_horizontal: true,
-             drag_block_vertical: true
-             });
-
-             */
-            /* hammer fix */
-            /*
-             self.map.on('touchstart', function(e) {
-             if (e.originalEvent.touches.length > 1) hammer.get('pinch').set({ enable: true });
-             });
-
-             self.map.on('touchend', function(e) {
-             hammer.get('pinch').set({ enable: false });
-             });
-             */
-            /* hammer fix ends */
-            /*
-
-             var scale=1, last_scale;
-             hammer.on('pinchstart', function(e) {
-             self.dragging = false;
-
-             scale = self.scale / self.o.fitscale;
-             last_scale = scale;
-             });
-
-             hammer.on('pinch', function(e) {
-             self.dragging = true;
-
-             if (e.scale != 1) scale = Math.max(1, Math.min(last_scale * e.scale, 100));
-
-             var oldscale = self.scale;
-             self.scale = self.normalizeScale(scale * self.o.fitscale);
-
-             self.x = normalizeX(self.x - (e.center.x - self.container.offset().left - self.x) * (self.scale/oldscale - 1));
-             self.y = self.normalizeY(self.y - (e.center.y - self.y) * (self.scale/oldscale - 1)); // - self.container.offset().top
-
-             self.moveTo(self.x, self.y, self.scale, 100);
-             });*/
-
-            /* Add mousedown event for svg */
-
             function onSvgMousedown(e) {
                 clog("<onSvgMousedown> self.mode = " + self.mode);
 
@@ -544,7 +351,7 @@ var clog = function () {
             function onDragNdrop(event) {
                 //clog("<mousedown> edit_type = " + self.edit_type);
                 clog("<mousedown> mode = " + self.mode);
-                clog(event);
+                //clog(event);
 
                 // если в данный момент не редактируем фигуру (т.е. не двигаем вершину фигуры)
                 if (self.edit_type == null) {
@@ -555,6 +362,8 @@ var clog = function () {
                     map.data('mouseY', event.pageY);
                     map.data('lastX', self.x);
                     map.data('lastY', self.y);
+                    map.data('startX', self.x);
+                    map.data('startY', self.y);
 
                     map.addClass('mdragging');
 
@@ -586,8 +395,14 @@ var clog = function () {
 
                         clog("<mouseup> self.mode = " + self.mode);
 
+                        // исключаем случайный dnd дрожащей рукой
+                        var dx = map.data('startX') - map.data('lastX');
+                        var dy = map.data('startY') - map.data('lastY');
+                        var delta = Math.sqrt(dx*dx + dy*dy);
+                        var is_real_dragging = delta > 10;
+
                         // если это в самом деле был drag\n\drop
-                        if (self.dragging) {
+                        if (self.dragging && is_real_dragging) {
 
                             self.x = map.data('lastX');
                             self.y = map.data('lastY');
@@ -622,31 +437,31 @@ var clog = function () {
                                     var yy = self.rightY(event.pageY);
                                     //clog("<mouseup> " + xx + "; " + yy);
 
-                                    self.new_area = new Polygon(xx, yy, false, self);
+                                    self.drawing_poligon = new Polygon(xx, yy, false, self);
 
-                                    //self.addEvent(self.el[0], 'mousemove', self.new_area.onDraw)
+                                    //self.addEvent(self.el[0], 'mousemove', self.drawing_poligon.onDraw)
                                     self.addEvent(self.el[0], 'mousemove', function (e) {
-                                        var _n_f = self.new_area;
+                                        var _n_f = self.drawing_poligon;
                                         var right_angle = !!e.shiftKey; //e.shiftKey ? true : false;
 
                                         _n_f.dynamicDraw(self.rightX(e.pageX), self.rightY(e.pageY), right_angle);
                                     })
-                                        //.addEvent(self.new_area.helpers[0].helper, 'click', self.new_area.onDrawStop)
-                                        //.addEvent(self.el[0], 'click', self.new_area.onDrawAddPoint);
+                                        //.addEvent(self.drawing_poligon.helpers[0].helper, 'click', self.drawing_poligon.onDrawStop)
+                                        //.addEvent(self.el[0], 'click', self.drawing_poligon.onDrawAddPoint);
                                         .addEvent(self.el[0], 'click', function (e) {
 
                                             // если кликнули в первую точку фигуры - заканчиваем рисование
                                             var $et = $(e.target);
-                                            var $h = $(self.new_area.helpers[0].helper);
+                                            var $h = $(self.drawing_poligon.helpers[0].helper);
                                             if ($et.attr('x') == $h.attr('x') && $et.attr('y') == $h.attr('y')) {
-                                                //self.new_area.onDrawStop();
+                                                //self.drawing_poligon.onDrawStop();
                                                 self.onDrawStop();
                                                 return;
                                             }
 
                                             var x = self.rightX(e.pageX),
                                                 y = self.rightY(e.pageY),
-                                                _n_f = self.new_area;
+                                                _n_f = self.drawing_poligon;
 
                                             if (e.shiftKey) {
                                                 var right_coords = _n_f.right_angle(x, y);
@@ -654,13 +469,13 @@ var clog = function () {
                                                 y = right_coords.y;
                                             }
                                             _n_f.addPoint(x, y);
-                                        });
-                                    //    .addEvent(document, 'keydown', new_area.onDrawStop)
+                                        })
+                                        .addEvent(document, 'keydown', self.onDrawStop);
                                 }
                             }
 
                             /* если находимся в режиме просмотра здания - входим в площадь*/
-                            else if (self.mode == 'view_building' || self.mode == 'view_area') {
+                            else if (self.mode == 'view_building') {
 
                                 // добираемся до объекта класса Area, который обслуживает полигон
                                 p = $(event.target).parent()[0];
@@ -704,6 +519,9 @@ var clog = function () {
 
             self.back_to_map_button_klass = new BackToMapButton();
             self.back_to_map_button_klass.init("#container_buttons", self);
+
+            self.save_preloader_klass = new SavePreloader();
+            self.save_preloader_klass.init();
 
         };
 
@@ -817,6 +635,15 @@ var clog = function () {
             return self;
         };
 
+        self.removeNodeFromSvg = function(node, is_overlay) {
+            if (is_overlay) {
+                self.svg_overlay[0].removeChild(node);
+            } else {
+                self.svg[0].removeChild(node);
+            }
+            return this;
+        };
+
         self.svgRemoveAllNodes = function () {
             self.svg.empty();
         };
@@ -881,10 +708,17 @@ var clog = function () {
         };
 
         self.onDrawStop = function (e) {
-            clog("<Polygon.onDrawStop>");
+            clog("<Map.onDrawStop>");
 
-            var _n_f = self.new_area;
-            //if (e.type == 'click' || (e.type == 'keydown' && e.keyCode == 13)) { // key Enter
+            if (e != undefined) {
+                if (e.type == 'keydown' && e.keyCode == 13) {
+                    // its ok, continue execution..
+                } else {
+                    return
+                }
+            }
+
+            var _n_f = self.drawing_poligon;
             if (_n_f.params.length >= 6) { //>= 3 points for polygon
                 _n_f.polyline = _n_f.polygon;
                 _n_f.polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
@@ -892,15 +726,29 @@ var clog = function () {
                 _n_f.setCoords(_n_f.params).deselect();
                 delete(_n_f.polyline);
 
+                // в зависимости от предыдущего состояния, создадим либо Здание, либо Площадь
+                if (self.prev_mode == "edit_building") {
+                    var bo = self.current_building.options;
+                    var a = new Area();
+                    a.init({ coords:_n_f.params }, bo, self);
+                    //a.is_new = true;
+                    _n_f.remove(); // удаляем нарисованный полигон, т.к. его уже заменили полигоном Area
+                    self.registerJustDrownArea(a);
+                }
+                else if (self.prev_mode == 'editing') {
+                    var b = new Building();
+                    b.init({ coords:_n_f.params }, self);
+                    //b.is_new = true;
+                    _n_f.remove(); // удаляем нарисованный полигон, т.к. его уже заменили полигоном Building
+                    self.registerJustDrownBuilding(b);
+                }
+
                 self.removeAllEvents();
-                self.new_area = null;
+                self.drawing_poligon = null;
                 self.is_draw = false;
-                self.complete_creating_button_klass.onClick();
-                //    .setIsDraw(false)
-                //    .resetNewArea();
             }
-            //}
-            //e.stopPropagation();
+
+            self.setMode('editing');
         };
 
         self.onEditStop = function (e) {
@@ -911,6 +759,14 @@ var clog = function () {
             _s_f.setParams(_s_f.dynamicEdit(_s_f[edit_type](e.pageX - _s_f.delta.x, e.pageY - _s_f.delta.y)));
 
             self.removeAllEvents();
+        };
+
+        self.registerJustDrownArea = function (area) {
+            self.drawn_areas.push(area);
+        };
+
+        self.registerJustDrownBuilding = function (building) {
+            self.drawn_buildings.push(building);
         };
 
         self.normalizeX = function (x) {
@@ -988,7 +844,7 @@ var clog = function () {
         var __moveToAnimate = function () {
             if (self.tooltip) self.tooltip.position();
         };
-        
+
         // x,y - экранные координаты
         self.moveTo = function (x, y, scale, d, easing) {
             clog("<self.moveTo> x = " + x + "; y = " + y + "; scale = " + scale);
