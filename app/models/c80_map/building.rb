@@ -3,6 +3,8 @@ module C80Map
     has_many :areas, :class_name => 'C80Map::Area', :dependent => :destroy
     validates :coords, uniqueness: true
     after_save :update_json
+    mount_uploader :img_bg, C80Map::BuildingImageUploader
+    mount_uploader :img_overlay, C80Map::BuildingImageUploader
 
     private
 
@@ -24,7 +26,7 @@ module C80Map
         ob = {
             id: b.id,
             object_type: 'building',
-            coords: b.coords,
+            coords: b.coords.split(","),
             building_hash: {
                 id: 2,
                 title: "Здание 2",
@@ -40,10 +42,10 @@ module C80Map
             },
             img: {
                 bg: {
-                    src: "/assets/sample_bg-e36f4b42acde72d4ff05376498e5834423165d43e73650dd24a342ecb20779b9.gif"
+                    src: b.img_bg.url
                 },
                 overlay: {
-                    src: "/assets/sample_overlay-f99419a8904207a6ac74288bccac16c76b388b7162bf2629a2a8dd825746f49b.gif"
+                    src: b.img_overlay.url
                 }
             },
             childs: []
@@ -63,9 +65,9 @@ module C80Map
 
       puts "<Building.update_json> #{locs_hash}"
 
-      # File.open(locations_path, 'w') do |f|
-      #   f.write(locs_hash.to_json)
-      # end
+      File.open(locations_path, 'w') do |f|
+        f.write(locs_hash.to_json)
+      end
 
     end
 
