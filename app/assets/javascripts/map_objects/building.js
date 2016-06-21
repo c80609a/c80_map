@@ -201,6 +201,11 @@ function Building() {
         _options = options;
         _this.options = options;
 
+        // [56dfaw1]
+        for (var i=0; i<_this.options.coords.length; i++) {
+            _this.options.coords[i] = Number(_this.options.coords[i]);
+        }
+
         // [4ddl5df]: в случае, если это только что отрисованное Здание - генерим временный случайный id
         if (_this.options["id"] == undefined) {
             _this.options["id"] = Math.ceil((Math.random()*100000));
