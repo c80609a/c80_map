@@ -56,6 +56,11 @@ function Area() {
             _this._options["id"] = Math.ceil((Math.random()*100000));
         }
 
+        // [56dfaw1]
+        for (var i=0; i<_this._options.coords.length; i++) {
+            _this._options.coords[i] = Number(_this._options.coords[i]);
+        }
+
         _this._options.parent_building_hash = parent_building_hash;
         //clog(_this._options.parent_building_hash);
 
