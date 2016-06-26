@@ -80,6 +80,12 @@ module C80Map
       end
     end
 
+    def self.fetch_json
+      locations_path = Rails.root.join("public", "locations.json")
+      locs = File.read(locations_path)
+      JSON.parse(locs)
+    end
+
   end
 
 end

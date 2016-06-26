@@ -20,6 +20,7 @@ module C80Map
           updated_locations_json: nil
       }
 
+      # сначала создадим здания
       if params[:buildings].present?
         params[:buildings].each_key do |key|
           new_building_options = params[:buildings][key]
@@ -36,6 +37,7 @@ module C80Map
         end
       end
 
+      # затем создадим области
       if params[:areas].present?
         params[:areas].each_key do |key|
           new_area_options = params[:areas][key]
@@ -54,6 +56,8 @@ module C80Map
           end
         end
       end
+
+      result[:updated_locations_json] = MapJson.fetch_json
 
       puts "<MapAjaxController.save_map_data> result = #{result.to_json}"
 

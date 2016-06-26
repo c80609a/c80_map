@@ -1,6 +1,19 @@
 
 var utils = {
 
+    // выдать из массива arr элемент с указанным id
+    getById: function (id,arr) {
+        var i;
+        var iel;
+        for (i=0; i<arr.length; i++) {
+            iel = arr[i];
+            if (iel.hasOwnProperty('id') && iel['id'] == id) {
+                return iel;
+            }
+        }
+        return null;
+    },
+
     offsetX: function (node) {
         var box = node.getBoundingClientRect(),
             scroll = window.pageXOffset;
