@@ -1,0 +1,71 @@
+"use strict";
+
+// при клике на эту кнопку произойдет показ модального окна _modal_window.html.erb
+
+function AreaLinkButton() {
+
+    var _map = null;
+    var _this = this;
+    _this.el = null;
+
+    var show_modal_window = function () {
+
+        //var $dialog = $('#modal_window');
+        //$dialog.find("h4").text($t.data("wtitle"));
+        //$dialog.find("#form_comment").css('display','block');
+        //$dialog.find("input#comment_part_id").val(partid);
+        //$dialog.find("input#comment_author").val(author);
+
+        $link_show_modal_window.click();
+
+    };
+
+    var fetch_free_areas = function () {
+        $.ajax({
+            url:'/ajax/fetch_unlinked_areas',
+            type:'POST',
+            data: {building_id:"building_id"},
+            dataType:'script'
+        }).done(fetch_free_areas_done);
+    };
+    var fetch_free_areas_done = function (data, result) {
+        _map.save_preloader_klass.hide();
+        show_modal_window();
+    };
+
+    var $link_show_modal_window = null;
+
+    _this.onClick = function (e) {
+        if (_this.el.hasClass('disabled')) return;
+        e.preventDefault();
+
+        console.log("<AreaLinkButton.click>");
+
+        _map.save_preloader_klass.show();
+
+        fetch_free_areas();
+    };
+
+    _this.init = function (button_css_selector, link_to_map) {
+        _map = link_to_map;
+        _this.el = $(button_css_selector);
+        _this.el.on('click', _this.onClick);
+        _this.hide();
+
+        // найдем кнопку, клик по которой покажет окно [_modal_window.html.erb]
+        $link_show_modal_window = $('.show_modal_window');
+
+        //console.log("<AreaLinkButton.init>");
+        //console.log(this.el);
+    };
+
+    _this.hide = function () {
+        _this.el.css('display','none');
+    };
+
+    _this.show = function () {
+        console.log("<AreaLinkButton.show>");
+        _this.el.css('display','block');
+    };
+
+}

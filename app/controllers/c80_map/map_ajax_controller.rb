@@ -2,7 +2,7 @@ module C80Map
   class MapAjaxController < ApplicationController
 
     def save_map_data
-      Rails.logger.debug "<MapAjaxController.save_map_data> params = #{params}"
+      # Rails.logger.debug "<MapAjaxController.save_map_data> params = #{params}"
 
       #{ "buildings"=>{"0"=>{"coords"=>["2496.5894495412845",...]}} }
       #{ "areas"=>{"0"=>{"coords"=>["2496.5894495412845",...]}} }

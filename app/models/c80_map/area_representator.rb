@@ -18,7 +18,19 @@ module C80Map
 
       def acts_as_map_area_representator
         class_eval do
+
           has_many :map_areas, :as => :area_representator, :class_name => 'C80Map::Area', :dependent => :destroy
+
+          def self.unlinked_areas
+            res = []
+            self.all.each do |area|
+              if area.map_areas.count == 0
+                res << area
+              end
+            end
+            res
+          end
+
         end
       end
     end

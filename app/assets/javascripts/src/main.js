@@ -1,5 +1,7 @@
 "use strict";
 
+var map_on_index_page = null;
+
 var InitMap = function () {
 
     // - to delete start -----------------------------------------------------------------------------------------------------------------------
@@ -16,7 +18,7 @@ var InitMap = function () {
     var y = (window_height - image_height)/2;
     // - to delete end -----------------------------------------------------------------------------------------------------------------------
 
-    $('#map_wrapper').beMap(
+    map_on_index_page = $('#map_wrapper').beMap(
         {
             source:LOCS_HASH,
             scale: scale,
@@ -73,6 +75,7 @@ var clog = function () {
         self.current_area = null;
         self.is_draw = false;
         self.save_button_klass = null;
+        self.area_link_button_klass = null;
         self.drawn_areas = []; // если имеются нарисованные но несохранённые Площади - они хранятся тут
         self.drawn_buildings = []; // если имеются нарисованные но несохранённые Здания - они хранятся тут
         self.save_preloader_klass = null;
@@ -202,6 +205,10 @@ var clog = function () {
 
                 self.save_button_klass = new SaveChangesButton();
                 self.save_button_klass.init('.mapplic-save-button', self);
+
+                // при клике на эту кнопку произойдет показ модального окна
+                self.area_link_button_klass = new AreaLinkButton();
+                self.area_link_button_klass.init('.mapplic-area-link-button', self);
 
             });
 
