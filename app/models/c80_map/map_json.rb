@@ -17,25 +17,31 @@ module C80Map
         # сначала соберём детей - Area
         childs = []
         b.areas.each do |area|
-          Rails.logger.debug "<MapJson.update_json> area #{area}"
+          # Rails.logger.debug "<MapJson.update_json> area #{area}"
+
+          har = {}
+          if area.area_representator.present?
+            har = area.area_representator.to_hash
+          end
 
           ab = {
               id: area.id,
               object_type: 'area',
               coords: area.coords.split(','),
-              area_hash: {
-                  id: 2,
-                  title: "Площадь #{area.id}.#{area.id}",
-                  is_free: true,
-                  props: {
-                      square: "124 кв.м.",
-                      floor_height: "6 кв. м",
-                      column_step: "2 м",
-                      gate_type: "распашные",
-                      communications: "Интернет, электричество, водоснабжение",
-                      price: "от 155 руб/кв.м в месяц"
-                  }
-              }
+              area_hash: har
+              # area_hash: {
+              #     id: 2,
+              #     title: "Площадь #{area.id}.#{area.id}",
+              #     is_free: true,
+              #     props: {
+              #         square: "124 кв.м.",
+              #         floor_height: "6 кв. м",
+              #         column_step: "2 м",
+              #         gate_type: "распашные",
+              #         communications: "Интернет, электричество, водоснабжение",
+              #         price: "от 155 руб/кв.м в месяц"
+              #     }
+              # }
           }
           childs << ab
         end

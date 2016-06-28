@@ -11,7 +11,7 @@ module C80Map
 
     def self.included(klass)
       klass.extend ClassMethods
-      # klass.send(:include, InstanceMethods)
+      klass.send(:include, InstanceMethods)
     end
 
     module ClassMethods
@@ -20,6 +20,7 @@ module C80Map
         class_eval do
 
           has_many :map_areas, :as => :area_representator, :class_name => 'C80Map::Area', :dependent => :destroy
+          after_save :update_json
 
           def self.unlinked_areas
             res = []
@@ -31,15 +32,33 @@ module C80Map
             res
           end
 
+          def update_json
+            MapJson.update_json
+          end
+
         end
       end
     end
 
-    # module InstanceMethods
-    #
-    #   def sites_list
-    #   end
-    # end
+    module InstanceMethods
+
+      def to_hash
+        res = {
+            id: id,
+            title: title,
+            props: {
+                square: square,
+                floor_height: floor_height,
+                gate_type: gate_type,
+                desc: desc,
+                # column_step: column_step,
+                # communications: communications,
+                price: price_string
+            }
+        }
+        res
+      end
+    end
 
   end
 end
