@@ -16,6 +16,23 @@ function AreaLinkButton() {
         //$dialog.find("input#comment_part_id").val(partid);
         //$dialog.find("input#comment_author").val(author);
 
+        var $m = $('#modal_window');
+        var $cc = $m.find('.modal-body');
+        $m.find('.modal-title').text('Укажите площадь, соответствующую полигону на карте');
+
+        setTimeout(function () {
+            $("select#unlinked_areas").selectpicker({size: 50, tickIcon: 'hidden'});
+        }, 1);
+
+        setTimeout(function () {
+            //console.log($cc.find("button"));
+            $cc.find("button").on('click', function () {
+                if ($(this).attr('id') == "submit_area_link") {
+                    _map.link_area();
+                }
+            });
+        }, 1000);
+
         $link_show_modal_window.click();
 
     };

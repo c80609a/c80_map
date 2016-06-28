@@ -4,6 +4,8 @@ function Area() {
 
     var _map = null;
     var _this = this;
+    _this.id = null;
+
     //var _polygon = null;
     //var _polygon_overlay = null;
 
@@ -50,6 +52,7 @@ function Area() {
 
         _map = pself;
         _this._options = options;
+        _this.id = options["id"];
 
         // [4ddl5df]
         if (_this._options["id"] == undefined) {

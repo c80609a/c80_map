@@ -22,7 +22,25 @@ Or install it yourself as:
 
 ## Usage
 
-1. Host application:
+0. Requires:
+
+```
+    #= require bootstrap/alert
+    #= require bootstrap/dropdown
+    #= require bootstrap-select
+```
+
+2. Add this:
+
+```
+    @import "c80_map";
+```
+
+```
+    #= require c80_map
+```
+
+1. Start (Host application script):
 
 ```
    $(document).ready(function() {

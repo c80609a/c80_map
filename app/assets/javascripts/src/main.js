@@ -981,6 +981,36 @@ var clog = function () {
 
         self.rightY = function(y) {
             return (y - self.y - self.container.offset().top) / self.scale
+        };
+
+        // взять C80Map::current_area и назначить ей Rent::area.id,
+        // выбранный в окне _modal_window.html.erb
+        self.link_area = function () {
+
+            var $m = $('#modal_window');
+            var $b = $m.find('.modal-footer').find('.btn');
+            var $s = $m.find('select');
+
+            var rent_area_id = $s.val();
+            var map_area_id = self.current_area.id;
+            console.log("<Map.link_area> rent_area_id = " + rent_area_id + "; map_area_id = " + map_area_id);
+
+            $b.click();
+            self.save_preloader_klass.show();
+
+            $.ajax({
+                url:'/ajax/link_area',
+                type:'POST',
+                data: {
+                    rent_area_id: rent_area_id,
+                    map_area_id: map_area_id
+                },
+                dataType:"json"
+            }).done(function (data, result) {
+                self.save_preloader_klass.hide();
+                self.data = data["updated_locations_json"];
+            });
+
         }
 
     };
