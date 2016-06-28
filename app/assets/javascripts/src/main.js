@@ -67,6 +67,7 @@ var clog = function () {
         self.drawing_poligon = null;
         self.events = [];
         self.edit_type = null;
+        self.remove_button_klass = null;
         self.new_button_klass = null;
         self.edit_button_klass = null;
         self.complete_creating_button_klass = null;
@@ -197,6 +198,13 @@ var clog = function () {
                 e.init('.mapplic-new-button', self);
                 self.new_button_klass = e;
 
+                e = new RemoveButton();
+                e.init('.mapplic-remove-button', self);
+                self.remove_button_klass = e;
+
+                e = new CancelRemoveButton();
+                e.init('#cancelRemoving', self);
+
                 e = new CancelCreatingButton();
                 e.init("#cancelCreating", self);
 
@@ -209,6 +217,8 @@ var clog = function () {
                 // при клике на эту кнопку произойдет показ модального окна
                 self.area_link_button_klass = new AreaLinkButton();
                 self.area_link_button_klass.init('.mapplic-area-link-button', self);
+
+                $('[data-toggle="tooltip"]').tooltip();
 
             });
 

@@ -7,14 +7,17 @@ function StateController() {
 
     _this.left_side = $("#left_side");
     _this.right_side = $("#right_side");
+    _this.remove_button = $('.mapplic-remove-button');
     _this.new_button = $('.mapplic-new-button');
     _this.mzoom_buttons = $('.mzoom_buttons');
     _this.map_creating = $('#map_creating');
     _this.map_editing = $('#map_editing');
+    _this.map_removing = $('#map_removing');
     _this.main_map = $('.main_map');
     _this.svg_overlay = $('#svg_overlay');
     _this.building_info = $('.building_info');
     _this.area_order_button = $('.area_order_button');
+    _this.edit_button = $('.mapplic-edit-button');
     _this.masked = $('#masked');
 
     _this.setMode = function (mode) {
@@ -36,6 +39,7 @@ function StateController() {
         _map.container.removeClass("viewing");
         _map.container.removeClass("editing");
         _map.container.removeClass("creating");
+        _map.container.removeClass("removing");
         _map.container.removeClass("view_building");
         _map.container.removeClass("edit_building");
         _map.container.removeClass("view_area");
@@ -48,11 +52,14 @@ function StateController() {
     _this.checkMode = function () {
 
         if (_this.new_button.length == 0) _this.new_button = $('.mapplic-new-button');
+        if (_this.remove_button.length == 0) _this.remove_button = $('.mapplic-remove-button');
+        if (_this.edit_button.length == 0) _this.edit_button = $('.mapplic-edit-button');
         if (_this.right_side.length == 0) _this.right_side = $('#right_side');
         if (_this.left_side.length == 0) _this.left_side = $('#left_side');
         if (_this.mzoom_buttons.length == 0) _this.mzoom_buttons = $('.mzoom_buttons');
         if (_this.map_creating.length == 0) _this.map_creating = $('#map_creating');
         if (_this.map_editing.length == 0) _this.map_editing = $('#map_editing');
+        if (_this.map_removing.length == 0) _this.map_removing = $('#map_removing');
         if (_this.main_map.length == 0) _this.main_map = $('.main_map');
         if (_this.svg_overlay.length == 0) _this.svg_overlay = $('#svg_overlay');
         if (_this.building_info.length == 0) _this.building_info = $('.building_info');
@@ -74,9 +81,14 @@ function StateController() {
                 _this.new_button.removeClass('mapplic-disabled');
                 _map.new_button_klass.resetState();
 
+                // покажем кнопку "удалить фигуру"
+                _this.remove_button.css('opacity', '1');
+                _this.remove_button.removeClass('mapplic-disabled');
+
                 // спрячем статусную область
                 _this.map_creating.css('display', 'none');
                 _this.map_editing.css('display', 'block');
+                _this.map_removing.css('display', 'none');
 
                 // покажем кнопки, присущие этому режиму
                 _this.mzoom_buttons.css('opacity', '1');
@@ -105,10 +117,13 @@ function StateController() {
 
                 _this.new_button.css('opacity', '0');
                 _this.new_button.addClass('mapplic-disabled');
+                _this.remove_button.css('opacity', '0');
+                _this.remove_button.addClass('mapplic-disabled');
                 _this.mzoom_buttons.css('opacity', '1');
 
                 _this.map_creating.css('display', 'none');
                 _this.map_editing.css('display', 'none');
+                _this.map_removing.css('display', 'none');
 
                 _this.main_map.css('opacity', '1');
                 _this.svg_overlay.css('display', 'none');
@@ -139,10 +154,27 @@ function StateController() {
                 //_this.mzoom_buttons.css('opacity', '0');
                 _this.map_creating.css('display', 'block');
                 _this.map_editing.css('display', 'none');
+                _this.map_removing.css('display', 'none');
 
                 _this.main_map.css('opacity', '1');
 
-                break;
+            break;
+
+            // перешли в состояние удаления полигона
+            case "removing":
+                //_this.mzoom_buttons.css('opacity', '0');
+                _this.map_creating.css('display', 'none');
+                _this.map_editing.css('display', 'none');
+                _this.map_removing.css('display', 'block');
+
+                _this.main_map.css('opacity', '1');
+
+                _map.save_button_klass.hide();
+                _this.new_button.css('opacity', '0');
+                _this.remove_button.css('opacity', '0');
+                _this.edit_button.css('opacity', '0');
+
+            break;
 
             // вошли в здание
             case "view_building":
@@ -162,7 +194,13 @@ function StateController() {
                 _map.current_building.resetOverlayZindex();
                 _map.save_button_klass.hide();
 
-                break;
+                _this.new_button.css('opacity', '0');
+                _this.new_button.addClass('mapplic-disabled');
+                _this.remove_button.css('opacity', '0');
+                _this.remove_button.addClass('mapplic-disabled');
+                _this.mzoom_buttons.css('opacity', '1');
+
+            break;
 
             // редактируем, находясь в здании
             case "edit_building":
@@ -182,14 +220,20 @@ function StateController() {
                 _this.new_button.removeClass('mapplic-disabled');
                 _map.new_button_klass.resetState();
 
+                // покажем кнопку "удалить фигуру"
+                _this.remove_button.css('opacity', '1');
+                _this.remove_button.removeClass('mapplic-disabled');
+
                 // спрячем инфу о здании
                 _this.building_info.css("top", -300);
 
                 // спрячем статус строку "вы создаёте полигон"
                 _this.map_creating.css('display', 'none');
+                _this.map_removing.css('display', 'none');
 
                 // покажем, возможно спрятанные, zoom кнопки
                 _this.mzoom_buttons.css('opacity', '1');
+                _this.edit_button.css('opacity', '1');
 
                 _map.save_button_klass.show();
                 _map.save_button_klass.check_and_enable();
@@ -211,12 +255,20 @@ function StateController() {
                 _map.edit_button_klass.setState('view_area', true); // [a1x7]
 
                 _map.area_link_button_klass.hide();
+
+                _this.new_button.css('opacity', '0');
+                _this.new_button.addClass('mapplic-disabled');
+                _this.remove_button.css('opacity', '0');
+                _this.remove_button.addClass('mapplic-disabled');
+                _this.mzoom_buttons.css('opacity', '1');
+
             break;
 
             // начали редактировать площадь
             case 'edit_area':
                 _map.area_link_button_klass.show();
                 _map.save_button_klass.show();
+                _this.edit_button.css('opacity', '1');
             break;
         }
     };

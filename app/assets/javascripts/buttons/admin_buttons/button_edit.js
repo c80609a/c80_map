@@ -25,6 +25,7 @@ function EditButton() {
         _this.state = state;
         _this.el.removeClass('editing');
         _this.el.removeClass('viewing');
+        _this.el.removeClass('removing');
         _this.el.removeClass('view_building');
         _this.el.removeClass('edit_building');
         _this.el.removeClass('view_area');
