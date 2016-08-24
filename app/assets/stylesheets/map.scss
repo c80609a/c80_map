@@ -464,7 +464,7 @@
         border-radius: 0 0 1px 1px;
         border-top: none;
         background-color: #a10000;
-//        opacity: 0;
+        //        opacity: 0;
         display: none;
 
         &:after {
@@ -1324,6 +1324,37 @@ div#map_wrapper {
             }
 
           }
+        }
+
+        &.unassigned {
+
+          polygon, polyline {
+            fill: rgba(131, 131, 131, 0.30);
+            stroke: rgba(131, 131, 131, 0.40);
+            cursor: pointer;
+
+            &:hover, &.hover {
+              fill: rgba(131, 131, 131, 0.40);
+              stroke: rgba(251, 251, 251, 0.86);
+            }
+          }
+
+          &.viewing_area {
+            polygon, polyline {
+              /*background: transparent url(image_path('loader_button.gif')) no-repeat 0 0;*/
+              fill: rgba(131, 131, 131, 0.50);
+              stroke: rgba(131, 131, 131, 0.60);
+              stroke-width: 2px;
+              stroke-dasharray: 10;
+              animation: dash 555s linear;
+
+              &:hover, &.hover {
+                fill: rgba(131, 131, 131, 0.70);
+                stroke: rgba(251, 251, 251, 0.86);
+              }
+            }
+          }
+
         }
 
         &.viewing_area {

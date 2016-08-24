@@ -80,10 +80,13 @@ function Area() {
         _this._polygon_overlay.hover(_this._mouse_in, _this._mouse_out);
         _this._calcBBox();
 
-        var k = 'free';
+        var k = 'unassigned';
         if (options.area_hash != undefined) {
-            if (!options.area_hash.is_free) {
-                k = 'busy';
+            if (typeof options.area_hash.id !== 'undefined') {
+                k = 'free';
+                if (!options.area_hash.is_free) {
+                    k = 'busy';
+                }
             }
         }
         _this._polygon.parent().attr("class", k);
