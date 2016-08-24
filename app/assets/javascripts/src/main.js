@@ -1,5 +1,6 @@
 "use strict";
 
+var IS_ADMIN = false;
 var map_on_index_page = null;
 
 var InitMap = function () {
