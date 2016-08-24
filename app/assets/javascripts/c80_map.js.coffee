@@ -8,5 +8,6 @@
 
 #= require ./src/utils/utils.js
 #= require ./src/utils/opacity_buttons_utils.js
+#= require ./src/utils/map_utils.js
 #= require ./src/state_controller.js
 #= require ./src/main.js

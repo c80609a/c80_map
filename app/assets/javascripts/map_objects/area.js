@@ -139,7 +139,6 @@ function Area() {
 
     _this.exit = function () {
         console.log('<Area.exit>');
-        _map.current_area = null;
     };
 
     this.invalidateAnimationMask = function () {
