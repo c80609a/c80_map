@@ -676,6 +676,7 @@ var clog = function () {
 
         self.svgRemoveAllNodes = function () {
             self.svg.empty();
+            self.svg_overlay.empty();
         };
 
         self.draw_childs = function (childs, parent_hash) {
