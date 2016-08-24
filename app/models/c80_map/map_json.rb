@@ -2,6 +2,7 @@ module C80Map
 
   class MapJson < ActiveRecord::Base
 
+    # этот метод вызовается после update Area
     def self.update_json
       locations_path = Rails.root.join("public", "locations.json")
       locs = File.read(locations_path)
