@@ -289,9 +289,9 @@ function Building() {
         _cx = xmin + (xmax - xmin) / 2;
         _cy = ymin + (ymax - ymin) / 2;
 
-        console.log("<Building._calcBBox> " +
+        //console.log("<Building._calcBBox> " +
             //xmin + "," + ymin + "; " + xmax + "," + ymax +
-        "; center logical: " + _cx + "," + _cy + ", center screen: " + _map.rightX(_cx) + ", " + _map.rightY(_cy));
+        //"; center logical: " + _cx + "," + _cy + ", center screen: " + _map.rightX(_cx) + ", " + _map.rightY(_cy));
     };
 
     // при редактировании здания (т.е. изменении полигонов и holer-ов площадей)
