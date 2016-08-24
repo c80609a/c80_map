@@ -23,6 +23,7 @@ module C80Map
           har = {}
           if area.area_representator.present?
             har = area.area_representator.to_hash
+            har["is_free"] = area.area_representator.is_free?
           end
 
           ab = {
