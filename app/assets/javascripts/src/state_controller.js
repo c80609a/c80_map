@@ -77,13 +77,11 @@ function StateController() {
                 _this.right_side.css("top", -300);
 
                 // покажем кнопку "добавить фигуру"
-                _this.new_button.css('opacity', '1');
-                _this.new_button.removeClass('mapplic-disabled');
+                OpacityButtonsUtils.show(_this.new_button);
                 _map.new_button_klass.resetState();
 
                 // покажем кнопку "удалить фигуру"
-                _this.remove_button.css('opacity', '1');
-                _this.remove_button.removeClass('mapplic-disabled');
+                OpacityButtonsUtils.show(_this.remove_button);
 
                 // спрячем статусную область
                 _this.map_creating.css('display', 'none');
@@ -115,10 +113,9 @@ function StateController() {
                 _this.left_side.css("top", _this.left_side.data('init'));
                 _this.right_side.css("top", _this.right_side.data('init'));
 
-                _this.new_button.css('opacity', '0');
-                _this.new_button.addClass('mapplic-disabled');
-                _this.remove_button.css('opacity', '0');
-                _this.remove_button.addClass('mapplic-disabled');
+                OpacityButtonsUtils.hide(_this.new_button);
+                OpacityButtonsUtils.hide(_this.remove_button);
+
                 _this.mzoom_buttons.css('opacity', '1');
 
                 _this.map_creating.css('display', 'none');
@@ -170,9 +167,11 @@ function StateController() {
                 _this.main_map.css('opacity', '1');
 
                 _map.save_button_klass.hide();
-                _this.new_button.css('opacity', '0');
-                _this.remove_button.css('opacity', '0');
-                _this.edit_button.css('opacity', '0');
+
+                // прячем кнопку "создать полигон"
+                OpacityButtonsUtils.hide(_this.new_button);
+                OpacityButtonsUtils.hide(_this.remove_button);
+                OpacityButtonsUtils.hide(_this.edit_button);
 
             break;
 
@@ -191,19 +190,20 @@ function StateController() {
 
                 _this.area_order_button.css('display', 'none');
                 _map.edit_button_klass.setState('view_building', true); // [a1x7]
-                _map.current_building.resetOverlayZindex();
+                if (_map.current_building != undefined) _map.current_building.resetOverlayZindex();
                 _map.save_button_klass.hide();
 
-                _this.new_button.css('opacity', '0');
-                _this.new_button.addClass('mapplic-disabled');
-                _this.remove_button.css('opacity', '0');
-                _this.remove_button.addClass('mapplic-disabled');
+                OpacityButtonsUtils.hide(_this.new_button);
+                OpacityButtonsUtils.hide(_this.remove_button);
+
                 _this.mzoom_buttons.css('opacity', '1');
 
             break;
 
             // редактируем, находясь в здании
             case "edit_building":
+
+                // спрячем кнопку "обратно на карту"
                 _map.back_to_map_button_klass.hide();
 
                 // т.к. этот слой используется испключительно в помощь при рисовании обводки площадей
@@ -213,16 +213,17 @@ function StateController() {
                 // заодно поменяем z-index слоёв с колоннами и слоя с svg
                 // полигонами площадей, чтобы можно было добраться мышкой
                 // до этих полигонов и редактировать их
-                _map.current_building.changeOverlayZindex();
+                if (_map.current_building != undefined) _map.current_building.changeOverlayZindex();
 
                 // покажем кнопку "добавить фигуру"
-                _this.new_button.css('opacity', '1');
-                _this.new_button.removeClass('mapplic-disabled');
+                OpacityButtonsUtils.show(_this.new_button);
                 _map.new_button_klass.resetState();
 
                 // покажем кнопку "удалить фигуру"
-                _this.remove_button.css('opacity', '1');
-                _this.remove_button.removeClass('mapplic-disabled');
+                OpacityButtonsUtils.show(_this.remove_button);
+
+                // покажем кнопку "ред"
+                OpacityButtonsUtils.show(_this.edit_button);
 
                 // спрячем инфу о здании
                 _this.building_info.css("top", -300);
@@ -233,7 +234,6 @@ function StateController() {
 
                 // покажем, возможно спрятанные, zoom кнопки
                 _this.mzoom_buttons.css('opacity', '1');
-                _this.edit_button.css('opacity', '1');
 
                 _map.save_button_klass.show();
                 _map.save_button_klass.check_and_enable();
@@ -256,20 +256,34 @@ function StateController() {
 
                 _map.area_link_button_klass.hide();
 
-                _this.new_button.css('opacity', '0');
-                _this.new_button.addClass('mapplic-disabled');
-                _this.remove_button.css('opacity', '0');
-                _this.remove_button.addClass('mapplic-disabled');
+                OpacityButtonsUtils.hide(_this.new_button);
+                OpacityButtonsUtils.hide(_this.remove_button);
+
                 _this.mzoom_buttons.css('opacity', '1');
 
             break;
 
             // начали редактировать площадь
             case 'edit_area':
+
+                // спрячем кнопку "обратно на карту"
+                _map.back_to_map_button_klass.hide();
+
+                // покажем кнопку "связать площадь с полигоном"
                 _map.area_link_button_klass.show();
+
+                // покажем кнопку "сохранить изменения"
                 _map.save_button_klass.show();
-                _this.edit_button.css('opacity', '1');
-            break;
+
+                // спрячем кнопку "создать полигон"
+                OpacityButtonsUtils.hide(_this.new_button);
+
+                // покажем кнопку "ред"
+                OpacityButtonsUtils.show(_this.edit_button);
+
+                _map.edit_button_klass.setState('edit_area', true); // [a1x7]
+
+                break;
         }
     };
 

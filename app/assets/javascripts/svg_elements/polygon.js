@@ -156,12 +156,14 @@ Polygon.prototype.remove = function () {
 };
 
 Polygon.prototype.select = function () {
+    //console.log("<POLYGON.SELECT>");
     utils.addClass(this.polygon, 'selected');
 
     return this;
 };
 
 Polygon.prototype.deselect = function () {
+    //console.log("<POLYGON.DE-SELECT>");
     utils.removeClass(this.polygon, 'selected');
 
     return this;
@@ -169,7 +171,7 @@ Polygon.prototype.deselect = function () {
 
 Polygon.createFromSaved = function (params, is_overlay, self) {
     //console.log("<Polygon.createFromSaved>");
-    console.log("<Polygon.createFromSaved> is_overlay = " + is_overlay);
+    //console.log("<Polygon.createFromSaved> is_overlay = " + is_overlay);
 
     var coords = params.coords,
         area = new Polygon(coords[0], coords[1], is_overlay, self);

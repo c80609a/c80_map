@@ -41,6 +41,9 @@ function EditButton() {
     this.onClick = function (e) {
         e.preventDefault();
 
+        // если после исполнения switch..case эта перменная будет true - значит надо будет вызвать кое-какой код
+        var mark_restore_svg_overlay = false;
+
         switch (_this.state) {
             case 'editing':
                 _this.setState('viewing');
@@ -54,18 +57,30 @@ function EditButton() {
                 _this.setState('edit_building');
                 break;
 
+            // находились в режиме редактирования здания, и перешли в режим просмотра здания
             case 'edit_building':
                 _this.setState('view_building');
+                mark_restore_svg_overlay = true;
                 break;
 
             case 'view_area':
                 _this.setState('edit_area');
+                // спрячем от клика мышки все полигоны из svg_overlay, кроме редактируемого полигона
+                MapUtils.svgOverlayHideAllExcept(_map.last_clicked_g);
                 break;
 
+            // находились в режиме редактирования площади, и перешли в режим просмотра площади
             case 'edit_area':
                 _this.setState('view_area');
+                mark_restore_svg_overlay = true;
                 break;
 
+        }
+
+        // покажем для клика мышкой все полигоны из svg_overlay
+        if (mark_restore_svg_overlay) {
+            MapUtils.svgOverlayRestore(_map.last_clicked_g);
+            _map.last_clicked_g = null;
         }
 
     };

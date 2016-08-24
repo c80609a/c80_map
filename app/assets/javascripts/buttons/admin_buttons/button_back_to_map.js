@@ -11,19 +11,17 @@ function BackToMapButton() {
     var _onClick = function () {
         _map.setMode('viewing');
 
-        _map.current_area = null;
-
         if (_map.current_building) {
             _map.current_building.exit();
+            _map.current_building = null;
         }
 
         if (_map.current_area) {
             _map.current_area.exit();
+            _map.current_area = null;
         }
 
         _map.svgRemoveAllNodes();
-
-
         _map.draw_childs(_map.data["childs"]);
 
     };

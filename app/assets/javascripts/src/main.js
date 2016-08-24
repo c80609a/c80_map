@@ -63,7 +63,7 @@ var clog = function () {
         self.mode = 'viewing';
         self.prev_mode = null;
         self.setMode = null;
-        self.selected_area = null;
+        self.selected_area = null;      // ссылка на полигон из #svg_overlay
         self.drawing_poligon = null;
         self.events = [];
         self.edit_type = null;
@@ -80,6 +80,7 @@ var clog = function () {
         self.drawn_areas = []; // если имеются нарисованные но несохранённые Площади - они хранятся тут
         self.drawn_buildings = []; // если имеются нарисованные но несохранённые Здания - они хранятся тут
         self.save_preloader_klass = null;
+        self.last_clicked_g = null; // начали просматривать area\building (запустили сессию), и здесь храним ссылку на последний кликнутый полигон из svg_overlay в течение сессии
 
         // true, если:
         //- юзер не кликал по кнопкам zoom
@@ -323,7 +324,7 @@ var clog = function () {
 
                         //app.deselectAll();
 
-                        // поменяем внешний вид - добавим класс .selected
+                        // поменяем внешний вид полигона - добавим класс .selected
                         self.selected_area.select();
 
                         // запомним начальные координаты кликаы
@@ -393,8 +394,8 @@ var clog = function () {
                         x = self.normalizeX(x);
                         y = self.normalizeY(y);
 
-                        clog("<Map.mousemove> x = " + x + "; y = " + y);
-                        clog("<Map.mousemove> Call moveTo.");
+                        //clog("<Map.mousemove> x = " + x + "; y = " + y);
+                        //clog("<Map.mousemove> Call moveTo.");
                         self.moveTo(x, y);
                         map.data('lastX', x);
                         map.data('lastY', y);
@@ -495,13 +496,24 @@ var clog = function () {
                             /* если находится в режиме просмотра площади - переключаемся на другую площадь */
                             else if (self.mode == 'view_building' || self.mode == 'view_area') {
 
+                                //console.log($(event.target).parent());
+                                // => g, который живёт в #svg_overlay, или, другими словами,
+                                // тот g, по которому кликнули последний раз,
+                                // просматривая либо здание, либо площадь
+                                var $viewing_g_from_svg_overlay = $(event.target).parent();
+
                                 // добираемся до объекта класса Area, который обслуживает полигон
-                                p = $(event.target).parent()[0];
+                                p = $viewing_g_from_svg_overlay[0];
                                 //clog($(event.target).parent()[0].obj.area_hash);
 
                                 if (p.obj && p.obj.area) {
+
+                                    // запомним последний кликнутый полигон
+                                    self.last_clicked_g = $viewing_g_from_svg_overlay;
+
                                     var area = p.obj.area;
-                                    clog("<mouseup> Входим в площадь.");
+                                    clog("<mouseup> Входим в площадь. self.last_clicked_g = ");
+                                    clog(self.last_clicked_g);
                                     area.enter();
                                 }
 
@@ -545,7 +557,7 @@ var clog = function () {
 
         // какой должен быть минимальный масштаб, чтобы вписать отрезок [min,max] в отрезок [p1,p2]
         self.calcScale = function (min, max, p1, p2) {
-            clog("<calcScale> [" + min + "," + max + '] to [' + p1 + "," + p2 + "]");
+            //clog("<calcScale> [" + min + "," + max + '] to [' + p1 + "," + p2 + "]");
             return (p2 - p1) / (max - min);
         };
 
@@ -865,7 +877,7 @@ var clog = function () {
 
         // x,y - экранные координаты
         self.moveTo = function (x, y, scale, d, easing) {
-            clog("<self.moveTo> x = " + x + "; y = " + y + "; scale = " + scale);
+            //clog("<self.moveTo> x = " + x + "; y = " + y + "; scale = " + scale);
 
             // если подан аргумент scale(масштаб)
             // перемещаемся анимированно
