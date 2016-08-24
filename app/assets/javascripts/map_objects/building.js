@@ -245,7 +245,6 @@ function Building() {
         _image_bg = null;
         _image_overlay = null;
         _zoomToMe();
-        _map.current_building = null;
     };
 
     // выдать центр дома в логических координатах
