@@ -73,6 +73,10 @@ function Area() {
         _this._polygon.parent_building_hash = parent_building_hash;
         _this._polygon = $(_this._polygon.polygon);
 
+        if (true) {
+           _this._label = new AreaLabel(options, _map);
+        }
+
 
         _this._polygon_overlay = Polygon.createFromSaved(options, true, _map);
         _this._polygon_overlay.area = _this;

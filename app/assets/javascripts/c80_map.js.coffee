@@ -1,5 +1,6 @@
 #= require ./svg_elements/helper.js
 #= require ./svg_elements/polygon.js
+#= require ./svg_elements/area_label.js
 
 #= require_directory ./events
 #= require_directory ./map_objects
