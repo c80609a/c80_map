@@ -870,7 +870,9 @@ var clog = function () {
 
         };
         var __moveToTimeout = function () {
-            $("#masked").removeClass('hiddn');
+            if (self.mode === 'edit_area'|| self.mode === 'view_area') {
+                $("#masked").removeClass('hiddn');
+            }
         };
         var __moveToAnimate = function () {
             if (self.tooltip) self.tooltip.position();
@@ -879,6 +881,7 @@ var clog = function () {
         // x,y - экранные координаты
         self.moveTo = function (x, y, scale, d, easing) {
             //clog("<self.moveTo> x = " + x + "; y = " + y + "; scale = " + scale);
+            clog('<self.moveTo>');
 
             // если подан аргумент scale(масштаб)
             // перемещаемся анимированно
