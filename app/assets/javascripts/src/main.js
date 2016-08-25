@@ -1,5 +1,6 @@
 "use strict";
 
+var IS_ADMIN = false;
 var map_on_index_page = null;
 
 var InitMap = function () {
@@ -676,6 +677,7 @@ var clog = function () {
 
         self.svgRemoveAllNodes = function () {
             self.svg.empty();
+            self.svg_overlay.empty();
         };
 
         self.draw_childs = function (childs, parent_hash) {
@@ -869,7 +871,9 @@ var clog = function () {
 
         };
         var __moveToTimeout = function () {
-            $("#masked").removeClass('hiddn');
+            if (self.mode === 'edit_area'|| self.mode === 'view_area') {
+                $("#masked").removeClass('hiddn');
+            }
         };
         var __moveToAnimate = function () {
             if (self.tooltip) self.tooltip.position();
@@ -878,6 +882,7 @@ var clog = function () {
         // x,y - экранные координаты
         self.moveTo = function (x, y, scale, d, easing) {
             //clog("<self.moveTo> x = " + x + "; y = " + y + "; scale = " + scale);
+            clog('<self.moveTo>');
 
             // если подан аргумент scale(масштаб)
             // перемещаемся анимированно

@@ -73,6 +73,10 @@ function Area() {
         _this._polygon.parent_building_hash = parent_building_hash;
         _this._polygon = $(_this._polygon.polygon);
 
+        // подпись над полигоном показываем только админам
+        if (IS_ADMIN) {
+           _this._label = new AreaLabel(options, _map);
+        }
 
         _this._polygon_overlay = Polygon.createFromSaved(options, true, _map);
         _this._polygon_overlay.area = _this;
@@ -80,10 +84,13 @@ function Area() {
         _this._polygon_overlay.hover(_this._mouse_in, _this._mouse_out);
         _this._calcBBox();
 
-        var k = 'free';
+        var k = 'unassigned';
         if (options.area_hash != undefined) {
-            if (!options.area_hash.is_free) {
-                k = 'busy';
+            if (typeof options.area_hash.id !== 'undefined') {
+                k = 'free';
+                if (!options.area_hash.is_free) {
+                    k = 'busy';
+                }
             }
         }
         _this._polygon.parent().attr("class", k);

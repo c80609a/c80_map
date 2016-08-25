@@ -58,6 +58,15 @@ module C80Map
         }
         res
       end
+
+      # свободна ли площадь, привязанная к полигону на карте
+      def is_free?
+        res = true
+        if map_areas.count > 0
+          res = map_areas.first.is_free?
+        end
+        res
+      end
     end
 
   end

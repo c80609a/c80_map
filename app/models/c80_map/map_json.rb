@@ -2,6 +2,7 @@ module C80Map
 
   class MapJson < ActiveRecord::Base
 
+    # этот метод вызовается после update Area
     def self.update_json
       locations_path = Rails.root.join("public", "locations.json")
       locs = File.read(locations_path)
@@ -22,6 +23,7 @@ module C80Map
           har = {}
           if area.area_representator.present?
             har = area.area_representator.to_hash
+            har["is_free"] = area.area_representator.is_free?
           end
 
           ab = {
