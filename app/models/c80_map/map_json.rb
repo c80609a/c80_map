@@ -2,6 +2,7 @@ module C80Map
 
   class MapJson < ActiveRecord::Base
 
+    # этот метод вызовается после update Area
     def self.update_json
       locations_path = Rails.root.join("public", "locations.json")
       locs = File.read(locations_path)
@@ -17,25 +18,32 @@ module C80Map
         # сначала соберём детей - Area
         childs = []
         b.areas.each do |area|
-          Rails.logger.debug "<MapJson.update_json> area #{area}"
+          # Rails.logger.debug "<MapJson.update_json> area #{area}"
+
+          har = {}
+          if area.area_representator.present?
+            har = area.area_representator.to_hash
+            har["is_free"] = area.area_representator.is_free?
+          end
 
           ab = {
               id: area.id,
               object_type: 'area',
               coords: area.coords.split(','),
-              area_hash: {
-                  id: 2,
-                  title: "Площадь #{area.id}.#{area.id}",
-                  is_free: true,
-                  props: {
-                      square: "124 кв.м.",
-                      floor_height: "6 кв. м",
-                      column_step: "2 м",
-                      gate_type: "распашные",
-                      communications: "Интернет, электричество, водоснабжение",
-                      price: "от 155 руб/кв.м в месяц"
-                  }
-              }
+              area_hash: har
+              # area_hash: {
+              #     id: 2,
+              #     title: "Площадь #{area.id}.#{area.id}",
+              #     is_free: true,
+              #     props: {
+              #         square: "124 кв.м.",
+              #         floor_height: "6 кв. м",
+              #         column_step: "2 м",
+              #         gate_type: "распашные",
+              #         communications: "Интернет, электричество, водоснабжение",
+              #         price: "от 155 руб/кв.м в месяц"
+              #     }
+              # }
           }
           childs << ab
         end
@@ -78,6 +86,12 @@ module C80Map
       File.open(locations_path, 'w') do |f|
         f.write(locs_hash.to_json)
       end
+    end
+
+    def self.fetch_json
+      locations_path = Rails.root.join("public", "locations.json")
+      locs = File.read(locations_path)
+      JSON.parse(locs)
     end
 
   end

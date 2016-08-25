@@ -1,5 +1,8 @@
 "use strict";
 
+var IS_ADMIN = false;
+var map_on_index_page = null;
+
 var InitMap = function () {
 
     // - to delete start -----------------------------------------------------------------------------------------------------------------------
@@ -16,7 +19,7 @@ var InitMap = function () {
     var y = (window_height - image_height)/2;
     // - to delete end -----------------------------------------------------------------------------------------------------------------------
 
-    $('#map_wrapper').beMap(
+    map_on_index_page = $('#map_wrapper').beMap(
         {
             source:LOCS_HASH,
             scale: scale,
@@ -61,10 +64,11 @@ var clog = function () {
         self.mode = 'viewing';
         self.prev_mode = null;
         self.setMode = null;
-        self.selected_area = null;
+        self.selected_area = null;      // ссылка на полигон из #svg_overlay
         self.drawing_poligon = null;
         self.events = [];
         self.edit_type = null;
+        self.remove_button_klass = null;
         self.new_button_klass = null;
         self.edit_button_klass = null;
         self.complete_creating_button_klass = null;
@@ -73,9 +77,11 @@ var clog = function () {
         self.current_area = null;
         self.is_draw = false;
         self.save_button_klass = null;
+        self.area_link_button_klass = null;
         self.drawn_areas = []; // если имеются нарисованные но несохранённые Площади - они хранятся тут
         self.drawn_buildings = []; // если имеются нарисованные но несохранённые Здания - они хранятся тут
         self.save_preloader_klass = null;
+        self.last_clicked_g = null; // начали просматривать area\building (запустили сессию), и здесь храним ссылку на последний кликнутый полигон из svg_overlay в течение сессии
 
         // true, если:
         //- юзер не кликал по кнопкам zoom
@@ -194,6 +200,13 @@ var clog = function () {
                 e.init('.mapplic-new-button', self);
                 self.new_button_klass = e;
 
+                e = new RemoveButton();
+                e.init('.mapplic-remove-button', self);
+                self.remove_button_klass = e;
+
+                e = new CancelRemoveButton();
+                e.init('#cancelRemoving', self);
+
                 e = new CancelCreatingButton();
                 e.init("#cancelCreating", self);
 
@@ -202,6 +215,12 @@ var clog = function () {
 
                 self.save_button_klass = new SaveChangesButton();
                 self.save_button_klass.init('.mapplic-save-button', self);
+
+                // при клике на эту кнопку произойдет показ модального окна
+                self.area_link_button_klass = new AreaLinkButton();
+                self.area_link_button_klass.init('.mapplic-area-link-button', self);
+
+                $('[data-toggle="tooltip"]').tooltip();
 
             });
 
@@ -306,7 +325,7 @@ var clog = function () {
 
                         //app.deselectAll();
 
-                        // поменяем внешний вид - добавим класс .selected
+                        // поменяем внешний вид полигона - добавим класс .selected
                         self.selected_area.select();
 
                         // запомним начальные координаты кликаы
@@ -376,8 +395,8 @@ var clog = function () {
                         x = self.normalizeX(x);
                         y = self.normalizeY(y);
 
-                        clog("<Map.mousemove> x = " + x + "; y = " + y);
-                        clog("<Map.mousemove> Call moveTo.");
+                        //clog("<Map.mousemove> x = " + x + "; y = " + y);
+                        //clog("<Map.mousemove> Call moveTo.");
                         self.moveTo(x, y);
                         map.data('lastX', x);
                         map.data('lastY', y);
@@ -478,13 +497,24 @@ var clog = function () {
                             /* если находится в режиме просмотра площади - переключаемся на другую площадь */
                             else if (self.mode == 'view_building' || self.mode == 'view_area') {
 
+                                //console.log($(event.target).parent());
+                                // => g, который живёт в #svg_overlay, или, другими словами,
+                                // тот g, по которому кликнули последний раз,
+                                // просматривая либо здание, либо площадь
+                                var $viewing_g_from_svg_overlay = $(event.target).parent();
+
                                 // добираемся до объекта класса Area, который обслуживает полигон
-                                p = $(event.target).parent()[0];
+                                p = $viewing_g_from_svg_overlay[0];
                                 //clog($(event.target).parent()[0].obj.area_hash);
 
                                 if (p.obj && p.obj.area) {
+
+                                    // запомним последний кликнутый полигон
+                                    self.last_clicked_g = $viewing_g_from_svg_overlay;
+
                                     var area = p.obj.area;
-                                    clog("<mouseup> Входим в площадь.");
+                                    clog("<mouseup> Входим в площадь. self.last_clicked_g = ");
+                                    clog(self.last_clicked_g);
                                     area.enter();
                                 }
 
@@ -528,7 +558,7 @@ var clog = function () {
 
         // какой должен быть минимальный масштаб, чтобы вписать отрезок [min,max] в отрезок [p1,p2]
         self.calcScale = function (min, max, p1, p2) {
-            clog("<calcScale> [" + min + "," + max + '] to [' + p1 + "," + p2 + "]");
+            //clog("<calcScale> [" + min + "," + max + '] to [' + p1 + "," + p2 + "]");
             return (p2 - p1) / (max - min);
         };
 
@@ -647,6 +677,7 @@ var clog = function () {
 
         self.svgRemoveAllNodes = function () {
             self.svg.empty();
+            self.svg_overlay.empty();
         };
 
         self.draw_childs = function (childs, parent_hash) {
@@ -840,7 +871,9 @@ var clog = function () {
 
         };
         var __moveToTimeout = function () {
-            $("#masked").removeClass('hiddn');
+            if (self.mode === 'edit_area'|| self.mode === 'view_area') {
+                $("#masked").removeClass('hiddn');
+            }
         };
         var __moveToAnimate = function () {
             if (self.tooltip) self.tooltip.position();
@@ -848,7 +881,8 @@ var clog = function () {
 
         // x,y - экранные координаты
         self.moveTo = function (x, y, scale, d, easing) {
-            clog("<self.moveTo> x = " + x + "; y = " + y + "; scale = " + scale);
+            //clog("<self.moveTo> x = " + x + "; y = " + y + "; scale = " + scale);
+            clog('<self.moveTo>');
 
             // если подан аргумент scale(масштаб)
             // перемещаемся анимированно
@@ -974,6 +1008,36 @@ var clog = function () {
 
         self.rightY = function(y) {
             return (y - self.y - self.container.offset().top) / self.scale
+        };
+
+        // взять C80Map::current_area и назначить ей Rent::area.id,
+        // выбранный в окне _modal_window.html.erb
+        self.link_area = function () {
+
+            var $m = $('#modal_window');
+            var $b = $m.find('.modal-footer').find('.btn');
+            var $s = $m.find('select');
+
+            var rent_area_id = $s.val();
+            var map_area_id = self.current_area.id;
+            console.log("<Map.link_area> rent_area_id = " + rent_area_id + "; map_area_id = " + map_area_id);
+
+            $b.click();
+            self.save_preloader_klass.show();
+
+            $.ajax({
+                url:'/ajax/link_area',
+                type:'POST',
+                data: {
+                    rent_area_id: rent_area_id,
+                    map_area_id: map_area_id
+                },
+                dataType:"json"
+            }).done(function (data, result) {
+                self.save_preloader_klass.hide();
+                self.data = data["updated_locations_json"];
+            });
+
         }
 
     };

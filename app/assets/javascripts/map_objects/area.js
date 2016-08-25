@@ -4,6 +4,8 @@ function Area() {
 
     var _map = null;
     var _this = this;
+    _this.id = null;
+
     //var _polygon = null;
     //var _polygon_overlay = null;
 
@@ -50,6 +52,7 @@ function Area() {
 
         _map = pself;
         _this._options = options;
+        _this.id = options["id"];
 
         // [4ddl5df]
         if (_this._options["id"] == undefined) {
@@ -70,6 +73,10 @@ function Area() {
         _this._polygon.parent_building_hash = parent_building_hash;
         _this._polygon = $(_this._polygon.polygon);
 
+        // подпись над полигоном показываем только админам
+        if (IS_ADMIN) {
+           _this._label = new AreaLabel(options, _map);
+        }
 
         _this._polygon_overlay = Polygon.createFromSaved(options, true, _map);
         _this._polygon_overlay.area = _this;
@@ -77,10 +84,13 @@ function Area() {
         _this._polygon_overlay.hover(_this._mouse_in, _this._mouse_out);
         _this._calcBBox();
 
-        var k = 'free';
+        var k = 'unassigned';
         if (options.area_hash != undefined) {
-            if (!options.area_hash.is_free) {
-                k = 'busy';
+            if (typeof options.area_hash.id !== 'undefined') {
+                k = 'free';
+                if (!options.area_hash.is_free) {
+                    k = 'busy';
+                }
             }
         }
         _this._polygon.parent().attr("class", k);
@@ -94,7 +104,7 @@ function Area() {
     };
 
     _this.enter = function () {
-        //clog("<Building.enter>");
+        console.log("<Area.enter>");
         //clog(_this._options);
 
         /* рассчитаем масштаб, при котором можно вписать прямоугольник дома в прямоугольник рабочей области */
@@ -108,8 +118,8 @@ function Area() {
         _map.x = _map.normalizeX(_map.CX - _map.scale * _cx - _map.container.offset().left);
         _map.y = _map.normalizeY(_map.CY - _map.scale * _cy - _map.container.offset().top);
 
-        clog("<Area.enter> [qq] moveTo: " + _map.x + ", " + _map.y);
-        clog("<Area.enter> Call moveTo.");
+        //clog("<Area.enter> [qq] moveTo: " + _map.x + ", " + _map.y);
+        //clog("<Area.enter> Call moveTo.");
         _map.moveTo(_map.x, _map.y, _map.scale, 400, 'easeInOutCubic');
 
         setTimeout(timeoutEnter, 400);
@@ -122,6 +132,7 @@ function Area() {
             _map.current_area._polygon.parent().attr("class", k);
         }
 
+        // <g class='busy viewing_area'>..<polygon >.</g>
         k = _this._polygon.parent().attr("class");
         k += " viewing_area";
         _this._polygon.parent().attr("class", k);
@@ -134,7 +145,7 @@ function Area() {
     };
 
     _this.exit = function () {
-        _map.current_area = null;
+        console.log('<Area.exit>');
     };
 
     this.invalidateAnimationMask = function () {
@@ -182,9 +193,9 @@ function Area() {
         _cx = xmin + (xmax - xmin) / 2;
         _cy = ymin + (ymax - ymin) / 2;
 
-        clog("<Area._calcBBox> " +
+        //clog("<Area._calcBBox> " +
             //xmin + "," + ymin + "; " + xmax + "," + ymax +
-        "; center logical: " + _cx + "," + _cy + ", center screen: " + _map.rightX(_cx) + ", " + _map.rightY(_cy));
+        //"; center logical: " + _cx + "," + _cy + ", center screen: " + _map.rightX(_cx) + ", " + _map.rightY(_cy));
     };
 
     _this._mouse_in = function () {
