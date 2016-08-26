@@ -244,7 +244,7 @@ function Building() {
         _image_overlay.remove();
         _image_bg = null;
         _image_overlay = null;
-        _zoomToMe();
+        //_zoomToMe();
     };
 
     // выдать центр дома в логических координатах
