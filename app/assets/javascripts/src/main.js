@@ -90,6 +90,10 @@ var clog = function () {
         // Т.Е., другими словами, true до момента, пока пользователь не начал взаимодействовать с картой
         self.mark_virgin = true;
 
+        // здесь сохранятся параметры для метода moveTo
+        // чтобы вернуть карту в исходное состояние после нажатия кнопки "назад на карту"
+        self.initial_map_position = null;
+
         self.init = function (el, params) {
             // extend options
             self.o = $.extend(self.o, params);
@@ -291,6 +295,18 @@ var clog = function () {
                     self.y = self.normalizeY(self.CY - self.scale * cy - self.container.offset().top);
                     clog("<Map.initProcessData> call moveTo");
                     self.moveTo(self.x, self.y, self.scale, 100);
+
+                    // если пользователь ещё не взаимодействовал с картой (т.е. она только загрузилась и готова к использованию)
+                    // запомним позицию, чтобы при нажатии на кнопку "назад на карту" происходил возврат с исходному
+                    // состоянию
+                    if (self.mark_virgin) {
+                        self.initial_map_position = {
+                            x: self.x,
+                            y: self.y,
+                            scale: self.scale
+                        }
+                    }
+
                 }
 
                 // ------------------------------------------------------------------------------------------------------------------------

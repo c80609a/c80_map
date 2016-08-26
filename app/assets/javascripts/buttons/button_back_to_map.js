@@ -24,6 +24,16 @@ function BackToMapButton() {
         _map.svgRemoveAllNodes();
         _map.draw_childs(_map.data["childs"]);
 
+        if (_map.initial_map_position != null) {
+            _map.moveTo(
+                _map.initial_map_position.x,
+                _map.initial_map_position.y,
+                _map.initial_map_position.scale,
+                400,
+                'easeInOutCubic'
+            );
+        }
+
     };
 
     _this.init = function (parent_div_selector, link_to_map) {
