@@ -113,28 +113,37 @@ function StateController() {
                 _this.left_side.css("top", _this.left_side.data('init'));
                 _this.right_side.css("top", _this.right_side.data('init'));
 
+                // спрячем кнопки редактора
                 OpacityButtonsUtils.hide(_this.new_button);
                 OpacityButtonsUtils.hide(_this.remove_button);
-
-                _this.mzoom_buttons.css('opacity', '1');
-
                 _this.map_creating.css('display', 'none');
                 _this.map_editing.css('display', 'none');
                 _this.map_removing.css('display', 'none');
 
+                // покажем кнопки zoom
+                _this.mzoom_buttons.css('opacity', '1');
+
+                // покажем главную карту(?)
                 _this.main_map.css('opacity', '1');
+
+                // скроем svg_overlay слой, который нужен только когда внутри здания
                 _this.svg_overlay.css('display', 'none');
 
+                // скроем слой, в котором рисуем анимацию по маске, который нужен только когда внутри здания\площади
+                _this.masked.addClass('hiddn');
+
+                // скроем табличку с данными о здании
                 if (_this.building_info.data("init") == undefined) {
                     _this.building_info.data('init', _this.building_info.css("top"));
                 }
                 _this.building_info.css("top", -300);
                 _this.building_info.css("display", "block");
 
-                _map.back_to_map_button_klass.hide();
-                _this.masked.addClass('hiddn');
-
+                // скроем кнопку "забронировать площадь"
                 _this.area_order_button.css('display', 'none');
+
+                // скроем кнопку "обратно на карту"
+                _map.back_to_map_button_klass.hide();
 
                 // актуально, когда входим в это состояние
                 // из здания\площади, нажав кнопку "обратно на карту"
