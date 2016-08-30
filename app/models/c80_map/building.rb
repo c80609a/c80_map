@@ -1,6 +1,7 @@
 module C80Map
   class Building < ActiveRecord::Base
     has_many :areas, :class_name => 'C80Map::Area', :dependent => :destroy
+    belongs_to :building_representator, :polymorphic => true
     validates :coords, uniqueness: true
     after_save :update_json
     mount_uploader :img_bg, C80Map::BuildingImageUploader
