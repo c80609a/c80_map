@@ -225,6 +225,10 @@ var clog = function () {
                 self.area_link_button_klass = new AreaLinkButton();
                 self.area_link_button_klass.init('.mapplic-area-link-button', self);
 
+                // при клике на эту кнопку произойдет показ модального окна, в котором можно будет указать здание, соответствующее полигону
+                self.building_link_button_klass = new BuildingLinkButton();
+                self.building_link_button_klass.init('.mapplic-building-link-button', self);
+
                 $('[data-toggle="tooltip"]').tooltip();
 
             });
@@ -1055,6 +1059,12 @@ var clog = function () {
                 self.data = data["updated_locations_json"];
             });
 
+        };
+
+        // взять C80Map::current_building и назначить ему Rent::building.id,
+        // выбранный в окне _modal_window.html.erb
+        self.link_building = function () {
+            console.log('<Map.link_building> ');
         }
 
     };

@@ -186,6 +186,13 @@ function StateController() {
 
             // вошли в здание
             case "view_building":
+
+                // покажем кнопку "обратно на карту"
+                _map.back_to_map_button_klass.show();
+
+                // скроем кнопку "связать здание с полигоном"
+                _map.building_link_button_klass.hide();
+
                 // спрячем надписи "цена за метр" и адрес с телефоном
                 _this.left_side.css("top", -300);
                 _this.right_side.css("top", -300);
@@ -194,7 +201,6 @@ function StateController() {
                 _this.svg_overlay.css('display', 'block');
 
                 _this.building_info.css("top", _this.building_info.data("init"));
-                _map.back_to_map_button_klass.show();
                 _this.masked.addClass('hiddn');
 
                 _this.area_order_button.css('display', 'none');
@@ -214,6 +220,9 @@ function StateController() {
 
                 // спрячем кнопку "обратно на карту"
                 _map.back_to_map_button_klass.hide();
+
+                // покажем кнопку "связать здание с полигоном"
+                _map.building_link_button_klass.show();
 
                 // т.к. этот слой используется испключительно в помощь при рисовании обводки площадей
                 // и перехватывает клики при dnd, то тут он нам не нужен
@@ -263,6 +272,7 @@ function StateController() {
                 _this.area_order_button.css('display', 'block');
                 _map.edit_button_klass.setState('view_area', true); // [a1x7]
 
+                // скроем кнопку "связать площадь с полигоном"
                 _map.area_link_button_klass.hide();
 
                 OpacityButtonsUtils.hide(_this.new_button);
