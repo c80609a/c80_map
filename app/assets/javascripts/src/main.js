@@ -1035,17 +1035,24 @@ var clog = function () {
         // выбранный в окне _modal_window.html.erb
         self.link_area = function () {
 
+            // фиксируем компоненты модального окна
             var $m = $('#modal_window');
             var $b = $m.find('.modal-footer').find('.btn');
             var $s = $m.find('select');
 
+            // извлекаем значения
             var rent_area_id = $s.val();
             var map_area_id = self.current_area.id;
             console.log("<Map.link_area> rent_area_id = " + rent_area_id + "; map_area_id = " + map_area_id);
 
+            // нажимаем кнопку "закрыть"
             $b.click();
+
+            // показываем прелоадер
             self.save_preloader_klass.show();
 
+            // отправляем запрос на сервер
+            // TODO_MY:: реализовать обработчик ошибок
             $.ajax({
                 url:'/ajax/link_area',
                 type:'POST',
