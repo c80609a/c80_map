@@ -955,6 +955,8 @@ var clog = function () {
 
         // показать инфо о здании
         self.showBuildingInfo = function (building_hash) {
+            console.log("<main.showBuildingInfo> id = " + building_hash.id);
+
             //"building_hash": {
             //    "id": 2,
             //        "title": "Здание 2",
@@ -968,16 +970,20 @@ var clog = function () {
             //            "price": "от 155 руб/кв.м в месяц"
             //    }
 
-            $building_info.find("h2").text(building_hash["title"]);
+            if (building_hash.id == undefined) {
+                $building_info.css('display','none');
+            } else {
+                $building_info.css('display','block');
+                $building_info.find("h2").text(building_hash["title"]);
 
-            var v;
-            for (var p in building_hash["props"]) {
-                v = building_hash["props"][p];
-                $building_info.find("#" + p).find('span').text(v);
+                var v;
+                for (var p in building_hash["props"]) {
+                    v = building_hash["props"][p];
+                    $building_info.find("#" + p).find('span').text(v);
+                }
+
+                $building_info.find("#square_free").css('height', 'auto');
             }
-
-            $building_info.find("#square_free").css('height', 'auto');
-
         };
 
         // показать инфо о просматриваемой площади
