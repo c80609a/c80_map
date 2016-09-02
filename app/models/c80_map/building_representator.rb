@@ -22,6 +22,16 @@ module C80Map
           has_many :map_buildings, :as => :building_representator, :class_name => 'C80Map::Building', :dependent => :destroy
           after_save :update_json
 
+          def self.unlinked_buildings
+            res = []
+            self.all.each do |building|
+              # if building.map_buildings.count == 0
+                res << building
+              # end
+            end
+            res
+          end
+
           def update_json
             MapJson.update_json
           end

@@ -20,6 +20,7 @@ module C80Map
         b.areas.each do |area|
           # Rails.logger.debug "<MapJson.update_json> area #{area}"
 
+          # соберём хэш привязанной к полигону площади
           har = {}
           if area.area_representator.present?
             har = area.area_representator.to_hash
@@ -48,23 +49,31 @@ module C80Map
           childs << ab
         end
 
+        # соберём хэш привязанного к полигону здания
+        hbu = {}
+        if b.building_representator.present?
+          hbu = b.building_representator.to_hash
+          # har["is_free"] = area.area_representator.is_free?
+        end
+
         ob = {
             id: b.id,
             object_type: 'building',
             coords: b.coords.split(","),
-            building_hash: {
-                id: 2,
-                title: "Здание 2",
-                props: {
-                    square: "1234 кв.м.",
-                    square_free: "124 кв. м",
-                    floor_height: "6 кв. м",
-                    column_step: "2 м",
-                    gate_type: "рaспашные",
-                    communications: "Интернет, электричество, водоснабжение",
-                    price: "от 155 руб/кв.м в месяц"
-                }
-            },
+            building_hash: hbu,
+            # building_hash: {
+            #     id: 2,
+            #     title: "Здание 2",
+            #     props: {
+            #         square: "1234 кв.м.",
+            #         square_free: "124 кв. м",
+            #         floor_height: "6 кв. м",
+            #         column_step: "2 м",
+            #         gate_type: "рaспашные",
+            #         communications: "Интернет, электричество, водоснабжение",
+            #         price: "от 155 руб/кв.м в месяц"
+            #     }
+            # },
             img: {
                 bg: {
                     src: b.img_bg.url
