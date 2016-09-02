@@ -200,6 +200,7 @@ function Building() {
         _map = link_to_map;
         _options = options;
         _this.options = options;
+        _this.id = options["id"];
 
         // [56dfaw1]
         for (var i=0; i<_this.options.coords.length; i++) {
@@ -235,6 +236,7 @@ function Building() {
         _map.svgRemoveAllNodes();
 
         _map.current_building = _this;
+        //console.log("<Building.enter> id: " + _this.id);
         _map.mark_virgin = false;
 
     };

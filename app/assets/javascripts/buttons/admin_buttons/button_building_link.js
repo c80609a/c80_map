@@ -2,10 +2,10 @@
 
 // при клике на эту кнопку произойдет:
 // * показ прелоадера,
-// * запрос за несвязанными площадями,
+// * запрос за несвязанными ЗДАНИЯМИ,
 // * после получения ответа - показ модального окна _modal_window.html.erb куда будет подставлен %modal-title% и %modal-body%
 
-function AreaLinkButton() {
+function BuildingLinkButton() {
 
     var _map = null;
     var _this = this;
@@ -21,17 +21,17 @@ function AreaLinkButton() {
 
         var $m = $('#modal_window');
         var $cc = $m.find('.modal-body');
-        $m.find('.modal-title').text('Укажите площадь, соответствующую полигону на карте');
+        $m.find('.modal-title').text('Укажите здание, соответствующее полигону на карте');
 
         setTimeout(function () {
-            $("select#unlinked_areas").selectpicker({size: 50, tickIcon: 'hidden'});
+            $("select#unlinked_buildings").selectpicker({size: 50, tickIcon: 'hidden'});
         }, 1);
 
         setTimeout(function () {
             //console.log($cc.find("button"));
             $cc.find("button").on('click', function () {
-                if ($(this).attr('id') == "submit_area_link") {
-                    _map.link_area();
+                if ($(this).attr('id') == "submit_building_link") {
+                    _map.link_building();
                 }
             });
         }, 1000);
@@ -40,15 +40,15 @@ function AreaLinkButton() {
 
     };
 
-    var fetch_free_areas = function () {
+    var fetch_free_buildings = function () {
         $.ajax({
-            url:'/ajax/fetch_unlinked_areas',
+            url:'/ajax/fetch_unlinked_buildings',
             type:'POST',
             data: {building_id:"building_id"},
             dataType:'script'
-        }).done(fetch_free_areas_done);
+        }).done(fetch_free_buildings_done);
     };
-    var fetch_free_areas_done = function (data, result) {
+    var fetch_free_buildings_done = function (data, result) {
         _map.save_preloader_klass.hide();
         show_modal_window();
     };
@@ -59,11 +59,11 @@ function AreaLinkButton() {
         if (_this.el.hasClass('disabled')) return;
         e.preventDefault();
 
-        console.log("<AreaLinkButton.click>");
+        console.log("<BuildingLinkButton.click>");
 
         _map.save_preloader_klass.show();
 
-        fetch_free_areas();
+        fetch_free_buildings();
     };
 
     _this.init = function (button_css_selector, link_to_map) {
@@ -75,7 +75,7 @@ function AreaLinkButton() {
         // найдем кнопку, клик по которой покажет окно [_modal_window.html.erb]
         $link_show_modal_window = $('.show_modal_window');
 
-        //console.log("<AreaLinkButton.init>");
+        //console.log("<BuildingLinkButton.init>");
         //console.log(this.el);
     };
 
@@ -84,7 +84,7 @@ function AreaLinkButton() {
     };
 
     _this.show = function () {
-        console.log("<AreaLinkButton.show>");
+        console.log("<BuildingLinkButton.show>");
         _this.el.css('display','block');
     };
 

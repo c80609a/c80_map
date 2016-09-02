@@ -225,6 +225,10 @@ var clog = function () {
                 self.area_link_button_klass = new AreaLinkButton();
                 self.area_link_button_klass.init('.mapplic-area-link-button', self);
 
+                // при клике на эту кнопку произойдет показ модального окна, в котором можно будет указать здание, соответствующее полигону
+                self.building_link_button_klass = new BuildingLinkButton();
+                self.building_link_button_klass.init('.mapplic-building-link-button', self);
+
                 $('[data-toggle="tooltip"]').tooltip();
 
             });
@@ -951,6 +955,8 @@ var clog = function () {
 
         // показать инфо о здании
         self.showBuildingInfo = function (building_hash) {
+            console.log("<main.showBuildingInfo> id = " + building_hash.id);
+
             //"building_hash": {
             //    "id": 2,
             //        "title": "Здание 2",
@@ -964,16 +970,20 @@ var clog = function () {
             //            "price": "от 155 руб/кв.м в месяц"
             //    }
 
-            $building_info.find("h2").text(building_hash["title"]);
+            if (building_hash.id == undefined) {
+                $building_info.css('display','none');
+            } else {
+                $building_info.css('display','block');
+                $building_info.find("h2").text(building_hash["title"]);
 
-            var v;
-            for (var p in building_hash["props"]) {
-                v = building_hash["props"][p];
-                $building_info.find("#" + p).find('span').text(v);
+                var v;
+                for (var p in building_hash["props"]) {
+                    v = building_hash["props"][p];
+                    $building_info.find("#" + p).find('span').text(v);
+                }
+
+                $building_info.find("#square_free").css('height', 'auto');
             }
-
-            $building_info.find("#square_free").css('height', 'auto');
-
         };
 
         // показать инфо о просматриваемой площади
@@ -1031,23 +1041,68 @@ var clog = function () {
         // выбранный в окне _modal_window.html.erb
         self.link_area = function () {
 
+            // фиксируем компоненты модального окна
             var $m = $('#modal_window');
             var $b = $m.find('.modal-footer').find('.btn');
             var $s = $m.find('select');
 
+            // извлекаем значения
             var rent_area_id = $s.val();
             var map_area_id = self.current_area.id;
             console.log("<Map.link_area> rent_area_id = " + rent_area_id + "; map_area_id = " + map_area_id);
 
+            // нажимаем кнопку "закрыть"
             $b.click();
+
+            // показываем прелоадер
             self.save_preloader_klass.show();
 
+            // отправляем запрос на сервер
+            // TODO_MY:: реализовать обработчик ошибок
             $.ajax({
                 url:'/ajax/link_area',
                 type:'POST',
                 data: {
                     rent_area_id: rent_area_id,
                     map_area_id: map_area_id
+                },
+                dataType:"json"
+            }).done(function (data, result) {
+                self.save_preloader_klass.hide();
+                self.data = data["updated_locations_json"];
+            });
+
+        };
+
+        // взять C80Map::current_building и назначить ему Rent::building.id,
+        // выбранный в окне _modal_window.html.erb
+        self.link_building = function () {
+            console.log('<Map.link_building> ');
+
+            // фиксируем компоненты модального окна
+            var $m = $('#modal_window');
+            var $b = $m.find('.modal-footer').find('.btn');
+            var $s = $m.find('select');
+
+            // извлекаем значения
+            var rent_building_id = $s.val();
+            var map_building_id = self.current_building.id;
+            console.log("<Map.link_area> rent_building_id = " + rent_building_id + "; map_building_id = " + map_building_id);
+
+            // нажимаем кнопку "закрыть"
+            $b.click();
+
+            // показываем прелоадер
+            self.save_preloader_klass.show();
+
+            // отправляем запрос на сервер
+            // TODO_MY:: реализовать обработчик ошибок
+            $.ajax({
+                url:'/ajax/link_building',
+                type:'POST',
+                data: {
+                    rent_building_id: rent_building_id,
+                    map_building_id: map_building_id
                 },
                 dataType:"json"
             }).done(function (data, result) {
