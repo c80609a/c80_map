@@ -51,8 +51,8 @@ module C80Map
                 floor_height: floor_height,
                 gate_type: gate_type,
                 desc: desc,
-                # column_step: column_step,
-                # communications: communications,
+                column_step: column_step,
+                communications: communications,
                 price: price_string
             }
         }
