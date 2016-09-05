@@ -1,6 +1,6 @@
 ActiveAdmin.register C80Map::Building do #, as: 'Building'
 
-  menu :label => "Buildings", :parent => 'Карта'
+  menu :label => "Buildings", :parent => 'Карта', :if => proc { current_admin_user.email == 'tz007@mail.ru' }
 
   before_filter :skip_sidebar!, :only => :index
 
