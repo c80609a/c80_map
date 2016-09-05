@@ -591,7 +591,7 @@ var clog = function () {
 
         var _$m = $("#map_wrapper");
         var _$b = $('footer .container');
-        var $building_info = $('.building_info');
+        var $building_info = $('.building_info'); // "layouts/shared/map_row/building_info"
         var $area_order_button = $('.area_order_button');
         var $container_buttons = $('#container_buttons');
         var _is_debug_drawn = true;
