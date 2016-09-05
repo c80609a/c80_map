@@ -1,4 +1,4 @@
-ActiveAdmin.register C80Map::Building, as: 'Building' do
+ActiveAdmin.register C80Map::Building do #, as: 'Building'
 
   menu :label => "Buildings", :parent => 'Карта'
 
