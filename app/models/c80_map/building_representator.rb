@@ -43,17 +43,21 @@ module C80Map
     module InstanceMethods
 
       def to_hash
+
+        Rails.logger.debug "<BuildingRepresentator.to_hash> self.free_square = #{self.free_square}"
+
         res = {
-            id: id,
-            title: title,
+            id: self.id,
+            title: self.title,
             props: {
-                square: square,
-                floor_height: floor_height,
-                gate_type: gate_type,
-                desc: desc,
-                column_step: column_step,
-                communications: communications,
-                price: price_string
+                square: self.square,
+                free_square: self.free_square,
+                floor_height: self.floor_height,
+                gate_type: self.gate_type,
+                desc: self.desc,
+                column_step: self.column_step,
+                communications: self.communications,
+                price: self.price_string
             }
         }
         res

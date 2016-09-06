@@ -14,16 +14,18 @@ module C80Map
       # [{id, object_type=object_type, coords, building_hash, img, childs:[<areas>]},..]
       buildings_to_location_json = []
       Building.all.each do |b|
+        # Rails.logger.debug "[TRACE] <MapJson.update_json> building: #{b}; building_representator: #{b.building_representator}"
 
         # сначала соберём детей - Area
         childs = []
         b.areas.each do |area|
-          # Rails.logger.debug "<MapJson.update_json> area #{area}"
+          # Rails.logger.debug "[TRACE] <MapJson.update_json> [1] area #{area}; area_representator: #{area.area_representator}"
 
           # соберём хэш привязанной к полигону площади
           har = {}
           if area.area_representator.present?
-            har = area.area_representator.to_hash
+            # Rails.logger.debug "[TRACE] <MapJson.update_json> [2] area #{area}; area_representator: #{area.area_representator}"
+            har = area.area_representator.to_hash_a
             har["is_free"] = area.area_representator.is_free?
           end
 
