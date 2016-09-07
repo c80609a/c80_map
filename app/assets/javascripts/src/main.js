@@ -976,10 +976,22 @@ var clog = function () {
                 $building_info.css('display','block');
                 $building_info.find("h2").text(building_hash["title"]);
 
-                var v;
-                for (var p in building_hash["props"]) {
+                var v, $ili, p;
+                for (p in building_hash["props"]) {
+
                     v = building_hash["props"][p];
-                    $building_info.find("#" + p).find('span').text(v);
+                    $ili = $building_info.find("#" + p);
+                    $ili.find('span').text(v);
+                    //console.log("."+v+".");
+
+                    // Не показывать пользователю карты незаполненные поля
+                    var li_css_display = 'block';
+                    if (v == '' || v == '-1' || v === 'null' || v == null) {
+                        li_css_display = 'none';
+                    }
+                    $ili.css('display',li_css_display);
+
+
                 }
 
                 $building_info.find("#square_free").css('height', 'auto');
