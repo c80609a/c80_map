@@ -42,7 +42,7 @@ module C80Map
 
     module InstanceMethods
 
-      def to_hash
+      def to_hash_a
         res = {
             id: id,
             title: title,
