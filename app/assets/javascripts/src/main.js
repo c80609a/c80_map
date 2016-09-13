@@ -570,7 +570,7 @@ var clog = function () {
             }, false);
 
             self.back_to_map_button_klass = new BackToMapButton();
-            self.back_to_map_button_klass.init("#container_buttons", self);
+            self.back_to_map_button_klass.init("#ui", self);
 
             self.save_preloader_klass = new SavePreloader();
             self.save_preloader_klass.init();
