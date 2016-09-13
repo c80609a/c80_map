@@ -1,4 +1,4 @@
-ActiveAdmin.register C80Map::Building do #, as: 'Building'
+ActiveAdmin.register C80Map::Building, as: 'Building' do
 
   menu :label => "Buildings", :parent => 'Карта', :if => proc { current_admin_user.email == 'tz007@mail.ru' }
 

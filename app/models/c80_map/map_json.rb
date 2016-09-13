@@ -58,10 +58,17 @@ module C80Map
           # har["is_free"] = area.area_representator.is_free?
         end
 
+        cc = nil
+        if b.coords.present?
+          cc = b.coords.split(",")
+        else
+          Rails.logger.debug "[TRACE] <Map_json.update_json> nil! #{b.id}"
+        end
+
         ob = {
             id: b.id,
             object_type: 'building',
-            coords: b.coords.split(","),
+            coords: cc,
             building_hash: hbu,
             # building_hash: {
             #     id: 2,
