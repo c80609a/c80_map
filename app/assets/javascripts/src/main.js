@@ -570,7 +570,7 @@ var clog = function () {
             }, false);
 
             self.back_to_map_button_klass = new BackToMapButton();
-            self.back_to_map_button_klass.init("#container_buttons", self);
+            self.back_to_map_button_klass.init("#ui", self);
 
             self.save_preloader_klass = new SavePreloader();
             self.save_preloader_klass.init();
@@ -1037,6 +1037,11 @@ var clog = function () {
             }
 
             $building_info.find("#square_free").css('height', '0');
+
+            // заполняем данными ссылку 'Оставить заявку'
+            var $a_make_order = $building_info.find('.c80_order_invoking_btn');
+            $a_make_order.data('comment-text', 'Здравствуйте, оставляю заявку на площадь: ' + area_hash["title"]);
+            $a_make_order.data('subj-id', area_hash["id"]);
 
         };
 
