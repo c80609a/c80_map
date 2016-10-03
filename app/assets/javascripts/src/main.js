@@ -254,6 +254,10 @@ var clog = function () {
                 if (window_height < 400) window_height = 400;
                 self.el.height(window_height + "px");
 
+                // 20161003: заодно после редизайна необходимо позиционировать текстовый блок с адресом
+                var hh = _$address_p.outerHeight(true);
+                _$address_p.css('margin-top',(window_height - hh - 200)+"px");
+
                 // ------------------------------------------------------------------------------------------------------------------------
 
                 // если пользователь еще не взаимодействовал с картой или вне здания\площади
@@ -595,6 +599,7 @@ var clog = function () {
         var $area_order_button = $('.area_order_button');
         var $container_buttons = $('#container_buttons');
         var _is_debug_drawn = true;
+        var _$address_p = $('#paddress'); // 20161003: после редизайна надо дополнительно позиционировать блок с адресом
 
         self.ivalidateViewArea = function () {
             //clog('<init> _$b.offset().left = ' + _$b.offset().left);
