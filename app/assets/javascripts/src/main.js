@@ -1132,7 +1132,19 @@ var clog = function () {
                 self.data = data["updated_locations_json"];
             });
 
-        }
+        };
+
+        self.show_free_areas_hint = function () {
+            // рисуем в слое #svg_overlay,
+            // а т.к. находимся в режиме просмотра карты,
+            // этот слой пуст, можно им пока воспользоваться
+
+
+
+        };
+        self.hide_free_areas_hint = function () {
+
+        };
 
     };
 

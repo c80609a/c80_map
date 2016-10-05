@@ -57,7 +57,8 @@ module C80Map
                 desc: self.desc,
                 column_step: self.column_step,
                 communications: self.communications,
-                price: self.price_string
+                price: self.price_string,
+                free_areas_count: self.free_areas_count # NOTE: free_areas_count находися в Rent::Building проекта vorsa
             }
         }
         res

@@ -216,6 +216,10 @@ function Building() {
         _polygon.building = _this;
 
         _this._calcBBox();
+
+        // подпись над зданием - сколько свободных площадей
+        _this._label = new BuildingLabel(options, _map);
+
     };
 
     _this.enter = function () {
