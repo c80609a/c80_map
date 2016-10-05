@@ -3,7 +3,12 @@
 var IS_ADMIN = false;
 var map_on_index_page = null;
 
-var InitMap = function () {
+var InitMap = function (params) {
+
+    var dnd_enable = true;
+    if (params != undefined && params["dnd_enable"] != undefined) {
+        dnd_enable = params["dnd_enable"];
+    }
 
     // - to delete start -----------------------------------------------------------------------------------------------------------------------
     var scale = 0.599999;
@@ -27,7 +32,8 @@ var InitMap = function () {
             y: y,
             mapwidth: MAP_WIDTH,
             mapheight: MAP_HEIGHT,
-            height: window_height
+            height: window_height,
+            dnd_enable: dnd_enable
         }
     );
 
@@ -56,7 +62,8 @@ var clog = function () {
             skin: '',         // css class name
             scale: 1,
             x: 0,
-            y: 0
+            y: 0,
+            dnd_enable: true
         };
         self.svg = null;
         self.svg_overlay = null;
@@ -82,6 +89,7 @@ var clog = function () {
         self.drawn_buildings = []; // если имеются нарисованные но несохранённые Здания - они хранятся тут
         self.save_preloader_klass = null;
         self.last_clicked_g = null; // начали просматривать area\building (запустили сессию), и здесь храним ссылку на последний кликнутый полигон из svg_overlay в течение сессии
+        self.dnd_enable = null; // если да, то можно карту dnd мышкой
 
         // true, если:
         //- юзер еще не кликал по кнопкам zoom
@@ -414,17 +422,19 @@ var clog = function () {
                     self.map.on('mousemove', function (event) {
                         self.dragging = true;
 
-                        var x = event.pageX - map.data('mouseX') + self.x;
-                        var y = event.pageY - map.data('mouseY') + self.y;
+                        if (self.dnd_enable) {
+                            var x = event.pageX - map.data('mouseX') + self.x;
+                            var y = event.pageY - map.data('mouseY') + self.y;
 
-                        x = self.normalizeX(x);
-                        y = self.normalizeY(y);
+                            x = self.normalizeX(x);
+                            y = self.normalizeY(y);
 
-                        //clog("<Map.mousemove> x = " + x + "; y = " + y);
-                        //clog("<Map.mousemove> Call moveTo.");
-                        self.moveTo(x, y);
-                        map.data('lastX', x);
-                        map.data('lastY', y);
+                            //clog("<Map.mousemove> x = " + x + "; y = " + y);
+                            //clog("<Map.mousemove> Call moveTo.");
+                            self.moveTo(x, y);
+                            map.data('lastX', x);
+                            map.data('lastY', y);
+                        }
                     });
 
                     $(document).on('mouseup', function (event) {
