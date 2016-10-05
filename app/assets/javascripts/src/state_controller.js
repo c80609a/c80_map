@@ -96,6 +96,9 @@ function StateController() {
                 _map.save_button_klass.show();
                 _map.save_button_klass.check_and_enable();
 
+                // скроем подсказки - сколько свободных площадей где есть
+                _map.hide_free_areas_hint();
+
                 break;
 
             // перешли в состояние
@@ -152,6 +155,9 @@ function StateController() {
                 if (_map.save_button_klass) {
                     _map.save_button_klass.hide();
                 }
+
+                // покажем подсказки - сколько свободных площадей где есть
+                _map.show_free_areas_hint();
 
                 break;
 
@@ -212,6 +218,9 @@ function StateController() {
                 OpacityButtonsUtils.hide(_this.remove_button);
 
                 _this.mzoom_buttons.css('opacity', '1');
+
+                // скроем подсказки - сколько свободных площадей где есть
+                _map.hide_free_areas_hint();
 
             break;
 
